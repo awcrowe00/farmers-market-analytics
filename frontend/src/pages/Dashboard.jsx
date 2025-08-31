@@ -3,12 +3,15 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import TrafficChart from '../components/Charts/TrafficChart';
 import WeatherChart from '../components/Charts/WeatherChart';
+import EventChart from '../components/Charts/EventChart';
 import StatsCard from '../components/Dashboard/StatsCard';
 import { Users, TrendingUp, Cloud, Clock } from 'lucide-react';
+import eventService from '../services/eventService';
 
 const Dashboard = () => {
   const { user } = useAuth();
   const [trafficData, setTrafficData] = useState([]);
+  const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalVisitors: 0,
@@ -37,6 +40,17 @@ const Dashboard = () => {
       });
       setLoading(false);
     }, 1000);
+
+    const fetchEventData = async () => {
+      try {
+        const data = await eventService.getEventData();
+        setEventData(data);
+      } catch (error) {
+        console.error('Error fetching event data:', error);
+      }
+    };
+    fetchEventData();
+
   }, []);
 
   if (loading) {
@@ -101,6 +115,11 @@ const Dashboard = () => {
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Weather Impact Analysis</h3>
           <WeatherChart data={trafficData} />
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-4">Event Attendees Over Time</h3>
+          <EventChart data={eventData} />
         </div>
       </div>
     </div>
