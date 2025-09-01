@@ -19,6 +19,8 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/farmers-m
 app.use('/api/auth', require('./routes/auth'));
 // app.use('/api/vendors', require('./routes/vendors'));
 // app.use('/api/traffic', require('./routes/traffic'));
+const eventDataRoutes = require('./routes/eventData');
+app.use('/api/eventData', eventDataRoutes);
 
 // Test route
 app.get('/api/test', (req, res) => {
