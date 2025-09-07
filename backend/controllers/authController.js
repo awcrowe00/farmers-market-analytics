@@ -2,8 +2,8 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+const generateToken = (id, role, email) => {
+  return jwt.sign({ id, role, email }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
 // @desc    Register user
@@ -33,7 +33,7 @@ const registerUser = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        token: generateToken(user._id),
+        token: generateToken(user._id, user.role, user.email),
       });
     } else {
       res.status(400).json({ message: 'Invalid user data' });
@@ -60,7 +60,7 @@ const loginUser = async (req, res) => {
         email: user.email,
         role: user.role,
         vendorId: user.vendorId,
-        token: generateToken(user._id),
+        token: generateToken(user._id, user.role, user.email),
       });
     } else {
       res.status(401).json({ message: 'Invalid credentials' });
