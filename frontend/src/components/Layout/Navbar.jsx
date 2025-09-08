@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { LogOut, BarChart3, User } from 'lucide-react';
+import logo from '../../assets/FMA.svg';
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -13,12 +14,12 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-lg border-b">
+    <nav className="bg-red-700 shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           <Link to="/" className="flex items-center space-x-2 text-xl font-bold text-primary-600">
-            <BarChart3 className="w-8 h-8" />
-            <span>Farmers Market Analytics</span>
+            <img src={logo} alt="farMar" width={60} height={60} /> 
+            <span className="text-white">Farmers Market Analytics</span>
           </Link>
           
           {isAuthenticated ? (
@@ -33,18 +34,18 @@ const Navbar = () => {
                 className="flex items-center space-x-1 bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 transition"
               >
                 <LogOut className="w-4 h-4" />
-                <span>Logout</span>
+                <span className="text-white">Logout</span>
               </button>
             </div>
           ) : (
-            <div className="space-x-4">
-              <Link
+            <div className="text-white space-x-4">
+              <Link style={{ color: '#FFF' }}
                 to="/login"
                 className="text-primary-600 hover:text-primary-700 font-medium"
               >
                 Login
               </Link>
-              <Link
+              <Link  style={{ color: '#FFF' }}
                 to="/register"
                 className="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 transition"
               >

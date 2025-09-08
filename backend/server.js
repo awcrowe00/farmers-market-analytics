@@ -1,4 +1,3 @@
-// backend/server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -6,8 +5,23 @@ require('dotenv').config();
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// CORS Configuration
+const corsOptions = {
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+
+// Debug middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
+
+// Other middleware
 app.use(express.json());
 
 // Database connection
@@ -17,10 +31,8 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/farmers-m
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
-// app.use('/api/vendors', require('./routes/vendors'));
-// app.use('/api/traffic', require('./routes/traffic'));
-const eventDataRoutes = require('./routes/eventData');
-app.use('/api/eventData', eventDataRoutes);
+app.use('/api/vendors', require('./routes/vendors'));
+app.use('/api/traffic', require('./routes/traffic'));
 
 // Test route
 app.get('/api/test', (req, res) => {
