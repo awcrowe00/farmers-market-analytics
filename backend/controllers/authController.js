@@ -1,8 +1,8 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+const generateToken = (id, role, email) => {
+  return jwt.sign({ id, role, email }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
 // @desc    Register user
@@ -33,7 +33,7 @@ const registerUser = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        token: generateToken(user._id),
+        token: generateToken(user._id, user.role, user.email),
       });
     } else {
       res.status(400).json({ message: 'Invalid user data' });
@@ -51,6 +51,21 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     res.json({ message: 'Login endpoint working' }); // Temporary response
+    // Check for user email
+    const user = await User.findOne({ email }).populate('vendorId');
+
+    if (user && (await user.matchPassword(password))) {
+      res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        vendorId: user.vendorId,
+        token: generateToken(user._id, user.role, user.email),
+      });
+    } else {
+      res.status(401).json({ message: 'Invalid credentials' });
+    }
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
