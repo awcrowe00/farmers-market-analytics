@@ -24,6 +24,11 @@ const userSchema = new mongoose.Schema({
   vendorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Vendor',
+  },
+  company: {
+    type: String,
+    required: true,
+    default: 'Default Company',
   }
 }, {
   timestamps: true,

@@ -1,7 +1,7 @@
 // frontend/src/services/trafficService.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/traffic';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/traffic';
 
 // Get auth token from localStorage
 const getAuthToken = () => {
@@ -9,8 +9,8 @@ const getAuthToken = () => {
   return user?.token ? `Bearer ${user.token}` : '';
 };
 
-const getTrafficData = async (vendorId, timeRange = '7d') => {
-  const response = await axios.get(`${API_URL}/${vendorId}`, {
+const getTrafficData = async (timeRange = '7d') => {
+  const response = await axios.get(`${API_URL}/`, {
     params: { timeRange },
     headers: {
       Authorization: getAuthToken(),
@@ -19,8 +19,8 @@ const getTrafficData = async (vendorId, timeRange = '7d') => {
   return response.data;
 };
 
-const getWeatherCorrelation = async (vendorId) => {
-  const response = await axios.get(`${API_URL}/${vendorId}/weather`, {
+const getWeatherCorrelation = async () => {
+  const response = await axios.get(`${API_URL}/weather`, {
     headers: {
       Authorization: getAuthToken(),
     },
@@ -28,8 +28,8 @@ const getWeatherCorrelation = async (vendorId) => {
   return response.data;
 };
 
-const getPeakHours = async (vendorId) => {
-  const response = await axios.get(`${API_URL}/${vendorId}/peak-hours`, {
+const getPeakHours = async () => {
+  const response = await axios.get(`${API_URL}/peak-hours`, {
     headers: {
       Authorization: getAuthToken(),
     },
