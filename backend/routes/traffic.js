@@ -7,3 +7,11 @@ router.get('/', protect, trafficController.getAllTrafficData);
 router.post('/', protect, trafficController.createTrafficData);
 
 module.exports = router;
+
+
+// Placeholder routes - we'll implement these later
+router.get('/', (req, res) => {
+  res.json({ message: 'Traffic route working' });
+});
+
+module.exports = router;

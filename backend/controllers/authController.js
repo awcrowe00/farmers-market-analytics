@@ -1,4 +1,3 @@
-// backend/controllers/authController.js
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
@@ -11,7 +10,9 @@ const generateToken = (id, role, email, company) => {
 // @access  Public
 const registerUser = async (req, res) => {
   try {
+    console.log('Register request received:', req.body);
     const { name, email, password, role, company } = req.body;
+
 
     // Check if user exists
     const userExists = await User.findOne({ email });
@@ -41,6 +42,7 @@ const registerUser = async (req, res) => {
       res.status(400).json({ message: 'Invalid user data' });
     }
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
@@ -51,7 +53,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+    res.json({ message: 'Login endpoint working' }); // Temporary response
     // Check for user email
     const user = await User.findOne({ email }).populate('vendorId');
 

@@ -1,4 +1,3 @@
-// backend/server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -7,8 +6,23 @@ const { protect } = require('./middleware/authMiddleware'); // Import protect mi
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// CORS Configuration
+const corsOptions = {
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+
+// Debug middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
+
+// Other middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -23,6 +37,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/traffic', protect, require('./routes/traffic'));
 const eventDataRoutes = require('./routes/eventData');
 app.use('/api/eventData', protect, eventDataRoutes);
+
 
 // Test route
 app.get('/api/test', (req, res) => {

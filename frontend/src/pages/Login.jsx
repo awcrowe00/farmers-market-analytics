@@ -32,16 +32,13 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-green-950 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <div className="flex justify-center">
-            <BarChart3 className="w-12 h-12 text-primary-600" />
-          </div>
-          <h2 className="mt-4 text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-4 text-3xl font-extrabold text-white">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-white">
             Access your farmers market analytics dashboard
           </p>
         </div>
@@ -55,7 +52,7 @@ const Login = () => {
           
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-white">
                 Email address
               </label>
               <input
@@ -63,7 +60,7 @@ const Login = () => {
                 name="email"
                 type="email"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-white placeholder-white text-white rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
@@ -71,7 +68,7 @@ const Login = () => {
             </div>
             
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-white">
                 Password
               </label>
               <input
@@ -79,7 +76,7 @@ const Login = () => {
                 name="password"
                 type="password"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-white text-white rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
@@ -98,9 +95,9 @@ const Login = () => {
           </div>
 
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-white">
               Don't have an account?{' '}
-              <Link to="/register" className="font-medium text-primary-600 hover:text-primary-500">
+              <Link style={{ color: '#FFF' }} to="/register" className="font-medium text-primary-600 hover:text-primary-500">
                 Sign up here
               </Link>
             </p>
