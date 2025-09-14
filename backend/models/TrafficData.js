@@ -7,6 +7,10 @@ const trafficDataSchema = new mongoose.Schema({
     ref: 'Vendor',
     required: true,
   },
+  company: {
+    type: String,
+    required: true,
+  },
   timestamp: {
     type: Date,
     required: true,
@@ -41,6 +45,7 @@ const trafficDataSchema = new mongoose.Schema({
 
 // Index for efficient querying
 trafficDataSchema.index({ vendorId: 1, timestamp: -1 });
+trafficDataSchema.index({ company: 1, timestamp: -1 });
 trafficDataSchema.index({ timestamp: -1 });
 
 module.exports = mongoose.model('TrafficData', trafficDataSchema);

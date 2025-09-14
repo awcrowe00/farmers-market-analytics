@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import TrafficChart from '../components/Charts/TrafficChart';
 import WeatherChart from '../components/Charts/WeatherChart';
 import EventChart from '../components/Charts/EventChart';
+import DateRangePicker from '../components/Charts/DatePicker';
 import StatsCard from '../components/Dashboard/StatsCard';
 import { Users, TrendingUp, Cloud, Clock } from 'lucide-react';
 import eventService from '../services/eventService';
@@ -13,6 +14,8 @@ const Dashboard = () => {
   const [trafficData, setTrafficData] = useState([]);
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [stats, setStats] = useState({
     totalVisitors: 0,
     avgDwellTime: 0,
@@ -53,6 +56,22 @@ const Dashboard = () => {
 
   }, []);
 
+  const handleDateRangeChange = (start, end) => {
+    setStartDate(start);
+    setEndDate(end);
+  };
+
+  // Filter data based on date range
+  const filteredTrafficData = trafficData.filter(item => {
+    const itemDate = new Date(item.date);
+    return (!startDate || itemDate >= startDate) && (!endDate || itemDate <= endDate);
+  });
+
+  const filteredEventData = eventData.filter(item => {
+    const itemDate = new Date(item.date);
+    return (!startDate || itemDate >= startDate) && (!endDate || itemDate <= endDate);
+  });
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -71,6 +90,12 @@ const Dashboard = () => {
         <p className="text-gray-600">
           Here's your farmers market analytics dashboard
         </p>
+      </div>
+
+      {/* Date Range Picker */}
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-4">Select Date Range</h3>
+        <DateRangePicker onDateRangeChange={handleDateRangeChange} />
       </div>
 
       {/* Stats Cards */}
@@ -109,17 +134,17 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Weekly Traffic Trend</h3>
-          <TrafficChart data={trafficData} />
+          <TrafficChart data={filteredTrafficData} />
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Weather Impact Analysis</h3>
-          <WeatherChart data={trafficData} />
+          <WeatherChart data={filteredTrafficData} />
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">Event Attendees Over Time</h3>
-          <EventChart data={eventData} />
+          <EventChart data={filteredEventData} />
         </div>
       </div>
     </div>

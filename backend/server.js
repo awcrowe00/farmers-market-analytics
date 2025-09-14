@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
+const { protect } = require('./middleware/authMiddleware'); // Import protect middleware
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
 
 // Other middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // Database connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/farmers-market-analytics')
@@ -31,8 +33,11 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/farmers-m
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/vendors', require('./routes/vendors'));
-app.use('/api/traffic', require('./routes/traffic'));
+// app.use('/api/vendors', require('./routes/vendors'));
+app.use('/api/traffic', protect, require('./routes/traffic'));
+const eventDataRoutes = require('./routes/eventData');
+app.use('/api/eventData', protect, eventDataRoutes);
+
 
 // Test route
 app.get('/api/test', (req, res) => {

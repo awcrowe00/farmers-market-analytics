@@ -6,6 +6,11 @@ const vendorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  company: {
+    type: String,
+    required: true,
+    default: 'Default Company',
+  },
   category: {
     type: String,
     required: true,

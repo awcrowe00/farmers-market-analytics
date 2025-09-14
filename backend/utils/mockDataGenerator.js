@@ -1,6 +1,7 @@
 // backend/utils/mockDataGenerator.js
 const TrafficData = require('../models/TrafficData');
 const Vendor = require('../models/Vendor');
+const EventData = require('../models/EventData'); // Import EventData model
 
 const weatherConditions = ['sunny', 'cloudy', 'rainy', 'windy'];
 const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -51,6 +52,7 @@ const generateMockTrafficData = async () => {
           
           mockData.push({
             vendorId: vendor._id,
+            company: vendor.company, // Assign company from vendor
             timestamp: new Date(date),
             customerCount: Math.floor(baseTraffic),
             dwellTime: Math.floor(Math.random() * 300) + 60, // 1-5 minutes
@@ -77,4 +79,33 @@ const generateMockTrafficData = async () => {
   }
 };
 
-module.exports = { generateMockTrafficData };
+const generateMockEventData = async () => {
+  try {
+    const companies = ['Company A', 'Company B']; // Example companies
+
+    const mockData = [];
+    const now = new Date();
+
+    for (let i = 30; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(date.getDate() - i);
+      date.setHours(10, 0, 0, 0); // Event at 10 AM
+
+      companies.forEach(company => {
+        mockData.push({
+          company: company,
+          date: new Date(date),
+          count: Math.floor(Math.random() * 50) + 20, // 20-70 attendees
+          location: `Market Square ${company.slice(-1)}`,
+          weather: weatherConditions[Math.floor(Math.random() * weatherConditions.length)],
+        });
+      });
+    }
+    await EventData.insertMany(mockData);
+    console.log(`Generated ${mockData.length} mock event data points`);
+  } catch (error) {
+    console.error('Error generating mock event data:', error);
+  }
+};
+
+module.exports = { generateMockTrafficData, generateMockEventData };

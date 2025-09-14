@@ -3,7 +3,9 @@ const EventData = require('../models/EventData');
 // Get all event data
 exports.getAllEventData = async (req, res) => {
   try {
-    const eventData = await EventData.find();
+    const eventData = await EventData.find({
+      company: req.user.company,
+    });
     res.status(200).json(eventData);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -13,7 +15,7 @@ exports.getAllEventData = async (req, res) => {
 // Create new event data
 exports.createEventData = async (req, res) => {
   const eventData = new EventData({
-    company: req.body.company,
+    company: req.user.company, // Assign company from authenticated user
     date: req.body.date,
     count: req.body.count,
     location: req.body.location,
