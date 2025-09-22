@@ -36,6 +36,14 @@ const authReducer = (state, action) => {
         ...state,
         loading: action.payload,
       };
+    case 'SET_USER':
+      // Update user in localStorage as well to maintain persistence
+      const updatedUser = { ...state.user, ...action.payload };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      return {
+        ...state,
+        user: updatedUser,
+      };
     default:
       return state;
   }
@@ -93,6 +101,7 @@ export const AuthProvider = ({ children }) => {
       login,
       register,
       logout,
+      setUser: (userData) => dispatch({ type: 'SET_USER', payload: userData }),
     }}>
       {children}
     </AuthContext.Provider>

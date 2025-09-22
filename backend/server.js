@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 const { protect } = require('./middleware/authMiddleware'); // Import protect middleware
+const path = require('path'); // Import path module
 
 const app = express();
 
@@ -37,6 +38,10 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/traffic', protect, require('./routes/traffic'));
 const eventDataRoutes = require('./routes/eventData');
 app.use('/api/eventData', protect, eventDataRoutes);
+app.use('/api/users', require('./routes/user'));
+
+// Serve uploads folder statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 // Test route
