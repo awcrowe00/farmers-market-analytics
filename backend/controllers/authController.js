@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const asyncHandler = require('express-async-handler');
 
 const generateToken = (id, role, email, company) => {
   return jwt.sign({ id, role, email, company }, process.env.JWT_SECRET, { expiresIn: '30d' });
@@ -50,30 +51,34 @@ const registerUser = async (req, res) => {
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
-const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    res.json({ message: 'Login endpoint working' }); // Temporary response
-    // Check for user email
-    const user = await User.findOne({ email }).populate('vendorId');
+const loginUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
 
-    if (user && (await user.matchPassword(password))) {
-      res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        vendorId: user.vendorId,
-        company: user.company,
-        token: generateToken(user._id, user.role, user.email, user.company),
-      });
-    } else {
-      res.status(401).json({ message: 'Invalid credentials' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+  console.log('Login attempt with email:', email);
+  console.log('Password (unhashed) received:', password);
+
+  // Check for user email
+  const user = await User.findOne({ email }).populate('vendorId');
+
+  console.log('User found:', user ? user.email : 'None');
+
+  if (user && (await user.matchPassword(password))) {
+    console.log('Password matched successfully!');
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      vendorId: user.vendorId,
+      company: user.company,
+      token: generateToken(user._id, user.role, user.email, user.company),
+    });
+  } else {
+    console.log('Invalid credentials: user not found or password mismatch.');
+    res.status(401);
+    throw new Error('Invalid credentials');
   }
-};
+});
 
 // @desc    Get user data
 // @route   GET /api/auth/me
@@ -99,9 +104,5 @@ const getMe = async (req, res) => {
 module.exports = {
   registerUser,
   loginUser,
-<<<<<<< Updated upstream
-};
-=======
   getMe,
 };
->>>>>>> Stashed changes

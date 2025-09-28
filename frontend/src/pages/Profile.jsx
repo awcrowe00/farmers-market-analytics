@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import userService from '../../services/userService';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext'; // Import useTheme
+import userService from '../services/userService';
 
 const Profile = () => {
   const { user, token, setUser } = useAuth(); // Assuming setUser is available from AuthContext
+  const { theme, setTheme } = useTheme(); // Use theme and setTheme from ThemeContext
   const [profileImage, setProfileImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [contactInfo, setContactInfo] = useState({
@@ -14,7 +16,6 @@ const Profile = () => {
   });
   const [settings, setSettings] = useState({
     notificationEmail: 'notifications@example.com', // Placeholder
-    theme: 'light', // Placeholder
   });
 
   useEffect(() => {
@@ -52,6 +53,7 @@ const Profile = () => {
   const handleImageUpload = async () => {
     if (selectedFile && token) {
       try {
+        console.log('Token before upload:', token);
         const response = await userService.uploadProfilePicture(token, selectedFile);
         console.log(response.message);
         setUser((prevUser) => ({
@@ -72,10 +74,14 @@ const Profile = () => {
   };
 
   const handleSettingsChange = (e) => {
-    setSettings({
-      ...settings,
-      [e.target.name]: e.target.value,
-    });
+    if (e.target.name === 'theme') {
+      setTheme(e.target.value);
+    } else {
+      setSettings({
+        ...settings,
+        [e.target.name]: e.target.value,
+      });
+    }
   };
 
   const handleContactSubmit = (e) => {
@@ -86,8 +92,8 @@ const Profile = () => {
 
   const handleSettingsSubmit = (e) => {
     e.preventDefault();
-    console.log('Saving settings:', settings);
-    // Implement API call to update settings
+    console.log('Saving settings:', settings, 'Theme:', theme);
+    // Implement API call to update settings and theme
   };
 
   return (
@@ -102,7 +108,7 @@ const Profile = () => {
             <div className="flex-shrink-0">
               <img
                 className="h-24 w-24 rounded-full object-cover"
-                src={profileImage ? `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${profileImage}` : "https://via.placeholder.com/96"}
+                src={profileImage ? `${import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5000'}${profileImage}` : "https://via.placeholder.com/96"}
                 alt="Profile"
               />
             </div>
@@ -119,7 +125,7 @@ const Profile = () => {
           </div>
           <button
             type="button"
-            className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-800 bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             onClick={handleImageUpload}
           >
             Save Profile Picture
@@ -207,7 +213,7 @@ const Profile = () => {
                 id="theme"
                 name="theme"
                 className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md"
-                value={settings.theme}
+                value={theme}
                 onChange={handleSettingsChange}
               >
                 <option value="light">Light</option>
@@ -217,7 +223,7 @@ const Profile = () => {
             <div>
               <button
                 type="submit"
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-800 bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
                 Save Settings
               </button>
