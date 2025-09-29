@@ -7,7 +7,7 @@ const AuthContext = createContext();
 const authReducer = (state, action) => {
   switch (action.type) {
     case 'LOGIN_SUCCESS':
-      console.log('Storing user data in localStorage:', action.payload); 
+      console.log('LOGIN_SUCCESS payload:', action.payload);
       localStorage.setItem('user', JSON.stringify(action.payload));
       return {
         ...state,
@@ -36,6 +36,15 @@ const authReducer = (state, action) => {
       return {
         ...state,
         loading: action.payload,
+      };
+    case 'SET_USER':
+      console.log('SET_USER payload:', action.payload);
+      // Update user in localStorage as well to maintain persistence
+      const updatedUser = { ...state.user, ...action.payload };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      return {
+        ...state,
+        user: updatedUser,
       };
     default:
       return state;
@@ -91,9 +100,11 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider value={{
       ...state,
+      token: state.user?.token || null,
       login,
       register,
       logout,
+      setUser: (userData) => dispatch({ type: 'SET_USER', payload: userData }),
     }}>
       {children}
     </AuthContext.Provider>
