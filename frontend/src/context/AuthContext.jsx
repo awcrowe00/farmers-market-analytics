@@ -7,6 +7,7 @@ const AuthContext = createContext();
 const authReducer = (state, action) => {
   switch (action.type) {
     case 'LOGIN_SUCCESS':
+      console.log('Storing user data in localStorage:', action.payload); 
       localStorage.setItem('user', JSON.stringify(action.payload));
       return {
         ...state,

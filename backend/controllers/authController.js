@@ -53,25 +53,52 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    res.json({ message: 'Login endpoint working' }); // Temporary response
+    console.log('Login attempt for:', email);
+    
     // Check for user email
     const user = await User.findOne({ email }).populate('vendorId');
-
-    if (user && (await user.matchPassword(password))) {
-      res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        vendorId: user.vendorId,
-        company: user.company,
-        token: generateToken(user._id, user.role, user.email, user.company),
-      });
-    } else {
-      res.status(401).json({ message: 'Invalid credentials' });
+    console.log('User found:', user ? 'Yes' : 'No');
+    
+    if (user) {
+      console.log('Checking password...');
+      // Check if matchPassword method exists
+      if (typeof user.matchPassword === 'function') {
+        const isMatch = await user.matchPassword(password);
+        console.log('Password match result:', isMatch);
+        
+        if (isMatch) {
+          return res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            vendorId: user.vendorId,
+            token: generateToken(user._id, user.role, user.email),
+          });
+        }
+      } else {
+        console.log('matchPassword method not found, using bcrypt directly');
+        const bcrypt = require('bcryptjs');
+        const isMatch = await bcrypt.compare(password, user.password);
+        console.log('Password match result:', isMatch);
+        
+        if (isMatch) {
+          return res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            vendorId: user.vendorId,
+            token: generateToken(user._id, user.role, user.email),
+          });
+        }
+      }
     }
+    
+    return res.status(401).json({ message: 'Invalid credentials' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Login error:', error);
+    return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
