@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: 'Default Company',
+  },
+  profilePicture: {
+    type: String,
+    default: '',
   }
 }, {
   timestamps: true,
