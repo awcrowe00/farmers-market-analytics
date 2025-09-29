@@ -45,10 +45,18 @@ const importData = async () => {
         role: 'market_manager',
         company: 'Company A',
       },
+      {
+        name: 'Honey Man',
+        email: 'honeyMan@example.com',
+        password: 'password123',
+        role: 'market_manager',
+        company: 'Company C1',
+      },
     ]);
 
     const vendorA1 = users.find(user => user.email === 'vendorA1@example.com');
     const vendorB1 = users.find(user => user.email === 'vendorB1@example.com');
+    const vendorC1 = users.find(user => user.email === 'vendorC1@example.com');
 
     await Vendor.insertMany([
       {
@@ -68,6 +76,15 @@ const importData = async () => {
         owner: vendorB1._id,
         company: 'Company B',
         products: [{ name: 'Bread', category: 'bread', averagePrice: 4.0 }]
+      },
+      {
+        name: 'Honey C',
+        category: 'honey',
+        boothNumber: 'C1',
+        location: { x: 50, y: 60 },
+        owner: vendorC1._id,
+        company: 'Company C',
+        products: [{ name: 'Honey', category: 'Honey', averagePrice: 8.0 }]
       },
     ]);
     

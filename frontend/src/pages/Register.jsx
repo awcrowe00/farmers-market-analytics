@@ -65,7 +65,7 @@ const Register = () => {
                 name="name"
                 type="text"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-white rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Enter your full name"
                 value={formData.name}
                 onChange={handleChange}
@@ -81,7 +81,7 @@ const Register = () => {
                 name="email"
                 type="email"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-white rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
@@ -97,7 +97,7 @@ const Register = () => {
                 name="password"
                 type="password"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-white rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Create a password"
                 value={formData.password}
                 onChange={handleChange}

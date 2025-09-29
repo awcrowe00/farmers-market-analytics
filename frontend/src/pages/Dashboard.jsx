@@ -6,6 +6,7 @@ import WeatherChart from '../components/Charts/WeatherChart';
 import EventChart from '../components/Charts/EventChart';
 import DateRangePicker from '../components/Charts/DatePicker';
 import StatsCard from '../components/Dashboard/StatsCard';
+import FarmersMarketHeatMap from '../components/HeatMap/FarmersMarketHeatMap';
 import { Users, TrendingUp, Cloud, Clock } from 'lucide-react';
 import eventService from '../services/eventService';
 
@@ -90,6 +91,10 @@ const Dashboard = () => {
         <p className="text-gray-600">
           Here's your farmers market analytics dashboard
         </p>
+      </div>
+
+      <div className="col-span-full">
+        <FarmersMarketHeatMap />
       </div>
 
       {/* Date Range Picker */}
