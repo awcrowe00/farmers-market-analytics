@@ -19,6 +19,8 @@
   "dependencies": {
     "axios": "^1.11.0",
     "chart.js": "^4.5.0",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "gridfs-stream": "^1.1.1",
+    "multer-gridfs-storage": "^5.0.2"
   }
 }
