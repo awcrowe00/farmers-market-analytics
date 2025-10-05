@@ -4,6 +4,8 @@ const cors = require('cors');
 require('dotenv').config();
 const { protect } = require('./middleware/authMiddleware'); // Import protect middleware
 const path = require('path'); // Import path module
+const multer = require('multer'); // Import multer
+const { GridFsStorage } = require('multer-gridfs-storage'); // Import GridFsStorage
 
 const app = express();
 
@@ -32,6 +34,23 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/farmers-m
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log('MongoDB connection error:', err));
 
+// GridFS Storage configuration
+const storage = new GridFsStorage({
+  url: process.env.MONGODB_URI || 'mongodb://localhost:27017/farmers-market-analytics',
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      const filename = `profilePicture-${Date.now()}${path.extname(file.originalname)}`;
+      const fileInfo = {
+        filename: filename,
+        bucketName: 'uploads' // This is the name of the collection in MongoDB for storing files
+      };
+      resolve(fileInfo);
+    });
+  }
+});
+
+const upload = multer({ storage }); // Create multer instance with GridFS storage
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 // app.use('/api/vendors', require('./routes/vendors'));
@@ -40,8 +59,8 @@ const eventDataRoutes = require('./routes/eventData');
 app.use('/api/eventData', protect, eventDataRoutes);
 app.use('/api/users', require('./routes/user'));
 
-// Serve uploads folder statically
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Remove static serving of uploads folder
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 // Test route
@@ -53,3 +72,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+module.exports = { upload, mongoose }; // Export upload and mongoose

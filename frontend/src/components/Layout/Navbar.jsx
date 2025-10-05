@@ -14,24 +14,24 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-red-700 shadow-lg">
+    <nav className="bg-primary-800 shadow-lg dark:bg-primary-950">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
-          <Link to="/" className="flex items-center space-x-2 text-xl font-bold text-primary-600">
+          <Link to="/" className="flex items-center space-x-2 text-xl font-bold text-secondary-200 dark:text-secondary-50">
             <img src={logo} alt="farMar" width={60} height={60} /> 
-            <span className="text-white">Farmers Market Analytics</span>
+            <span className="text-white dark:text-gray-100">Farmers Market Analytics</span>
           </Link>
           
           {isAuthenticated ? (
             <div className="flex items-center space-x-4">
-              <Link to="/profile" className="flex items-center space-x-2 text-gray-700 hover:text-primary-700 transition">
+              <Link to="/profile" className="flex items-center space-x-2 text-primary-200 hover:text-secondary-400 transition dark:text-primary-100 dark:hover:text-secondary-200">
                 <User className="w-5 h-5" />
                 <span>Welcome, {user?.name}</span>
-                <span className="text-sm text-gray-500 capitalize">({user?.role})</span>
+                <span className="text-sm text-primary-300 capitalize dark:text-primary-200">({user?.role})</span>
               </Link>
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-1 bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 transition"
+                className="flex items-center space-x-1 bg-secondary-600 text-white px-4 py-2 rounded hover:bg-secondary-700 transition dark:bg-secondary-500 dark:hover:bg-secondary-600"
               >
                 <LogOut className="w-4 h-4" />
                 <span className="text-white">Logout</span>
@@ -39,15 +39,15 @@ const Navbar = () => {
             </div>
           ) : (
             <div className="text-white space-x-4">
-              <Link style={{ color: '#FFF' }}
+              <Link style={{ color: '#FFF' }} // This might need to be adjusted with Tailwind classes
                 to="/login"
-                className="text-primary-600 hover:text-primary-700 font-medium"
+                className="text-secondary-200 hover:text-secondary-400 font-medium dark:text-secondary-100 dark:hover:text-secondary-200"
               >
                 Login
               </Link>
-              <Link  style={{ color: '#FFF' }}
+              <Link  style={{ color: '#FFF' }} // This might need to be adjusted with Tailwind classes
                 to="/register"
-                className="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 transition"
+                className="bg-secondary-600 text-white px-4 py-2 rounded hover:bg-secondary-700 transition dark:bg-secondary-500 dark:hover:bg-secondary-600"
               >
                 Sign Up
               </Link>
