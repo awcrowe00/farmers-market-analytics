@@ -37,8 +37,8 @@ const getEventData = async () => {
   }
 };
 
-const eventService = {
-  getEventData,
-};
+// const eventService = {
+//   getEventData,
+// };
 
-export default eventService;
+// export default eventService;

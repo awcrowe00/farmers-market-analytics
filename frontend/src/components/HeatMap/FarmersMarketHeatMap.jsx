@@ -302,7 +302,7 @@ const FarmersMarketHeatMap = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-6 text-gray-900 mb-2">
         {/* Controls */}
         <div className="lg:w-1/4 space-y-4">
           <div>
@@ -376,7 +376,7 @@ const FarmersMarketHeatMap = () => {
               {(() => {
                 const stats = getVendorStats(hoveredVendor);
                 return stats ? (
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-2 text-sm text-gray-900 mb-2">
                     <div><strong>{stats.name}</strong></div>
                     {stats.boothNumber && <div>Booth: {stats.boothNumber}</div>}
                     <div className="flex items-center">

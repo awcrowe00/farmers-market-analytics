@@ -5,7 +5,14 @@ const API_URL = '/api/heatmap';
 
 const getAuthToken = () => {
   const user = JSON.parse(localStorage.getItem('user'));
-  return user?.token ? `Bearer ${user.token}` : '';
+  console.log('Getting auth token...');
+  console.log('User from localStorage:', user);
+  console.log('Token exists:', !!user?.token);
+  
+  const token = user?.token ? `Bearer ${user.token}` : '';
+  console.log('Final auth header:', token);
+  
+  return token;
 };
 
 const getHeatMapData = async (timeRange = 'today', hour = null) => {

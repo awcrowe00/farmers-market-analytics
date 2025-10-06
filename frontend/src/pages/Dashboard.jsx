@@ -8,7 +8,7 @@ import DateRangePicker from '../components/Charts/DatePicker';
 import StatsCard from '../components/Dashboard/StatsCard';
 import FarmersMarketHeatMap from '../components/HeatMap/FarmersMarketHeatMap';
 import { Users, TrendingUp, Cloud, Clock } from 'lucide-react';
-import eventService from '../services/eventService';
+// import eventService from '../services/eventService';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -45,15 +45,15 @@ const Dashboard = () => {
       setLoading(false);
     }, 1000);
 
-    const fetchEventData = async () => {
-      try {
-        const data = await eventService.getEventData();
-        setEventData(data);
-      } catch (error) {
-        console.error('Error fetching event data:', error);
-      }
-    };
-    fetchEventData();
+    // const fetchEventData = async () => {
+    //   try {
+    //     const data = await eventService.getEventData();
+    //     setEventData(data);
+    //   } catch (error) {
+    //     console.error('Error fetching event data:', error);
+    //   }
+    // };
+    // fetchEventData();
 
   }, []);
 
@@ -99,12 +99,12 @@ const Dashboard = () => {
 
       {/* Date Range Picker */}
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Select Date Range</h3>
+        <h3 className="text-lg font-semibold mb-4 text-black mb-2">Select Date Range</h3>
         <DateRangePicker onDateRangeChange={handleDateRangeChange} />
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-black mb-2">
         <StatsCard
           title="Total Visitors"
           value={stats.totalVisitors}
