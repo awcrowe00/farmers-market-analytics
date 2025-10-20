@@ -1,11 +1,12 @@
-// frontend/src/components/HeatMap/FarmersMarketHeatMap.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Users, MapPin, TrendingUp, Calendar, RefreshCw, AlertCircle } from 'lucide-react';
+import { Users, MapPin, TrendingUp, Calendar, RefreshCw, AlertCircle, Map } from 'lucide-react';
 import heatMapService from '../../services/heatMapService';
+import { useAuth } from '../../context/AuthContext';
 
 const FarmersMarketHeatMap = () => {
   const canvasRef = useRef(null);
-  const [selectedTimeRange, setSelectedTimeRange] = useState('today');
+  const { user, isAuthenticated } = useAuth();
+  const [selectedTimeRange, setSelectedTimeRange] = useState('week');
   const [selectedHour, setSelectedHour] = useState(new Date().getHours());
   const [hoveredVendor, setHoveredVendor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,22 +14,29 @@ const FarmersMarketHeatMap = () => {
   const [heatMapData, setHeatMapData] = useState([]);
   const [marketLayout, setMarketLayout] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [showTopography, setShowTopography] = useState(true);
 
-  // Default market dimensions
   const defaultDimensions = { width: 800, height: 500 };
   
-  // Time-based traffic adjustments (fallback if no real-time data)
   const timeMultipliers = {
     8: 0.3, 9: 0.5, 10: 0.8, 11: 0.95, 12: 1.0, 13: 0.9,
     14: 0.85, 15: 0.7, 16: 0.4, 17: 0.2, 18: 0.1, 19: 0.05
   };
 
-  // Fetch market layout on component mount
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="text-center py-12">
+          <p className="text-gray-600">Please log in to view the heat map.</p>
+        </div>
+      </div>
+    );
+  }
+
   useEffect(() => {
     fetchMarketLayout();
   }, []);
 
-  // Fetch heat map data when filters change
   useEffect(() => {
     if (marketLayout) {
       fetchHeatMapData();
@@ -43,7 +51,6 @@ const FarmersMarketHeatMap = () => {
     } catch (error) {
       console.error('Failed to fetch market layout:', error);
       setError('Failed to load market layout. Using default layout.');
-      // Set a default layout
       setMarketLayout({
         vendors: [],
         landmarks: [],
@@ -65,9 +72,8 @@ const FarmersMarketHeatMap = () => {
       console.error('Failed to fetch heat map data:', error);
       setError('Failed to load traffic data. Please try again.');
       
-      // Fallback to mock data if real data fails
       if (marketLayout && marketLayout.vendors.length > 0) {
-        const mockData = marketLayout.vendors.map((vendor, index) => ({
+        const mockData = marketLayout.vendors.map((vendor) => ({
           ...vendor,
           traffic: Math.random() * 100,
           avgCustomers: Math.floor(Math.random() * 30) + 5,
@@ -81,7 +87,6 @@ const FarmersMarketHeatMap = () => {
     }
   };
 
-  // Get traffic intensity color
   const getHeatColor = (traffic, hour) => {
     const adjustedTraffic = traffic * (timeMultipliers[hour] || 0.5);
     const intensity = Math.min(adjustedTraffic / 100, 1);
@@ -92,7 +97,116 @@ const FarmersMarketHeatMap = () => {
     return `rgba(255, 0, 0, ${0.4 + intensity * 0.6})`;
   };
 
-  // Draw the heat map
+  const drawTopography = (ctx, width, height) => {
+    // Draw grass/ground base
+    const grassGradient = ctx.createLinearGradient(0, 0, 0, height);
+    grassGradient.addColorStop(0, '#e8f5e9');
+    grassGradient.addColorStop(0.5, '#c8e6c9');
+    grassGradient.addColorStop(1, '#a5d6a7');
+    ctx.fillStyle = grassGradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Draw subtle terrain contours
+    ctx.strokeStyle = 'rgba(76, 175, 80, 0.15)';
+    ctx.lineWidth = 2;
+    
+    // Horizontal contour lines
+    for (let y = 50; y < height; y += 80) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      
+      for (let x = 0; x < width; x += 20) {
+        const wave = Math.sin(x / 50) * 10;
+        ctx.lineTo(x, y + wave);
+      }
+      ctx.stroke();
+    }
+
+    // Draw pathways/walkways
+    ctx.fillStyle = 'rgba(139, 69, 19, 0.2)';
+    
+    // Main horizontal paths
+    ctx.fillRect(50, 140, width - 100, 30);
+    ctx.fillRect(50, 240, width - 100, 30);
+    ctx.fillRect(50, 340, width - 100, 30);
+    
+    // Vertical paths
+    ctx.fillRect(140, 50, 25, height - 100);
+    ctx.fillRect(340, 50, 25, height - 100);
+    ctx.fillRect(540, 50, 25, height - 100);
+
+    // Add path texture (dirt/gravel effect)
+    ctx.fillStyle = 'rgba(101, 67, 33, 0.1)';
+    for (let i = 0; i < 200; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      
+      // Only draw on paths
+      const onHorizontalPath = (y > 140 && y < 170) || (y > 240 && y < 270) || (y > 340 && y < 370);
+      const onVerticalPath = (x > 140 && x < 165) || (x > 340 && x < 365) || (x > 540 && x < 565);
+      
+      if (onHorizontalPath || onVerticalPath) {
+        ctx.fillRect(x, y, 2, 2);
+      }
+    }
+
+    // Draw trees/decorative elements around the market
+    const drawTree = (x, y, size) => {
+      // Tree trunk
+      ctx.fillStyle = '#6d4c41';
+      ctx.fillRect(x - size/6, y, size/3, size);
+      
+      // Tree foliage
+      ctx.fillStyle = '#66bb6a';
+      ctx.beginPath();
+      ctx.arc(x, y, size * 0.8, 0, 2 * Math.PI);
+      ctx.fill();
+      
+      // Highlight
+      ctx.fillStyle = 'rgba(129, 199, 132, 0.6)';
+      ctx.beginPath();
+      ctx.arc(x - size/4, y - size/4, size * 0.4, 0, 2 * Math.PI);
+      ctx.fill();
+    };
+
+    // Place trees around the perimeter
+    const treePositions = [
+      { x: 40, y: 60 }, { x: 760, y: 60 },
+      { x: 40, y: 180 }, { x: 760, y: 180 },
+      { x: 40, y: 300 }, { x: 760, y: 300 },
+      { x: 40, y: 420 }, { x: 760, y: 420 },
+      { x: 150, y: 30 }, { x: 400, y: 30 }, { x: 650, y: 30 },
+      { x: 150, y: 470 }, { x: 400, y: 470 }, { x: 650, y: 470 }
+    ];
+
+    treePositions.forEach(pos => {
+      drawTree(pos.x, pos.y, 15);
+    });
+
+    // Draw market entrance sign
+    ctx.fillStyle = 'rgba(121, 85, 72, 0.8)';
+    ctx.fillRect(width/2 - 60, 10, 120, 25);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('MARKET ENTRANCE', width/2, 27);
+
+    // Draw parking area indicator
+    ctx.strokeStyle = 'rgba(158, 158, 158, 0.5)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.strokeRect(620, 380, 150, 100);
+    ctx.setLineDash([]);
+    
+    ctx.fillStyle = 'rgba(97, 97, 97, 0.3)';
+    ctx.fillRect(620, 380, 150, 100);
+    
+    ctx.fillStyle = '#616161';
+    ctx.font = '10px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('PARKING', 695, 435);
+  };
+
   useEffect(() => {
     if (!marketLayout || heatMapData.length === 0) return;
     
@@ -102,37 +216,39 @@ const FarmersMarketHeatMap = () => {
     const ctx = canvas.getContext('2d');
     const { width, height } = marketLayout.dimensions || defaultDimensions;
     
-    // Clear canvas
     ctx.clearRect(0, 0, width, height);
     
-    // Draw background
-    ctx.fillStyle = '#f8f9fa';
-    ctx.fillRect(0, 0, width, height);
-    
-    // Draw grid lines for reference
-    ctx.strokeStyle = '#e9ecef';
-    ctx.lineWidth = 1;
-    for (let x = 0; x <= width; x += 50) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
+    // Draw topographical background
+    if (showTopography) {
+      drawTopography(ctx, width, height);
+    } else {
+      ctx.fillStyle = '#f8f9fa';
+      ctx.fillRect(0, 0, width, height);
+      
+      // Simple grid
+      ctx.strokeStyle = '#e9ecef';
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= width; x += 50) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= height; y += 50) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
     }
-    for (let y = 0; y <= height; y += 50) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
-      ctx.stroke();
-    }
     
-    // Draw heat zones around vendors
+    // Draw heat zones
     heatMapData.forEach(vendor => {
       if (!vendor.location) return;
       
       const traffic = vendor.traffic || 0;
       const radius = 30 + (traffic / 100) * 20;
       
-      // Create radial gradient for heat effect
       const gradient = ctx.createRadialGradient(
         vendor.location.x, vendor.location.y, 0,
         vendor.location.x, vendor.location.y, radius
@@ -155,7 +271,6 @@ const FarmersMarketHeatMap = () => {
       const isHovered = hoveredVendor === vendor.id || hoveredVendor === vendor._id;
       const boothSize = 15;
       
-      // Booth background - color by category
       const categoryColors = {
         produce: '#22c55e',
         bakery: '#f59e0b',
@@ -167,6 +282,18 @@ const FarmersMarketHeatMap = () => {
         other: '#6b7280'
       };
       
+      // Booth shadow
+      if (showTopography) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        ctx.fillRect(
+          vendor.location.x - boothSize/2 + 2, 
+          vendor.location.y - boothSize/2 + 2, 
+          boothSize, 
+          boothSize
+        );
+      }
+      
+      // Booth background
       ctx.fillStyle = isHovered ? '#007bff' : (categoryColors[vendor.category] || '#6b7280');
       ctx.fillRect(
         vendor.location.x - boothSize/2, 
@@ -185,9 +312,9 @@ const FarmersMarketHeatMap = () => {
         boothSize
       );
       
-      // Booth number/name (abbreviated)
+      // Booth number
       ctx.fillStyle = '#fff';
-      ctx.font = '8px Arial';
+      ctx.font = 'bold 8px Arial';
       ctx.textAlign = 'center';
       ctx.fillText(
         vendor.boothNumber || vendor.name.substring(0, 3).toUpperCase(), 
@@ -197,44 +324,46 @@ const FarmersMarketHeatMap = () => {
     });
     
     // Draw landmarks
-    if (marketLayout.landmarks) {
+    if (marketLayout.landmarks && showTopography) {
       marketLayout.landmarks.forEach(landmark => {
-        ctx.fillStyle = '#6c757d';
+        // Landmark shadow
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        ctx.fillRect(landmark.x - 8, landmark.y - 8, 20, 20);
+        
+        // Landmark
+        ctx.fillStyle = '#8d6e63';
         ctx.fillRect(landmark.x - 10, landmark.y - 10, 20, 20);
-        ctx.strokeStyle = '#495057';
+        ctx.strokeStyle = '#5d4037';
         ctx.lineWidth = 1;
         ctx.strokeRect(landmark.x - 10, landmark.y - 10, 20, 20);
         
-        // Landmark label
         ctx.fillStyle = '#fff';
-        ctx.font = '8px Arial';
+        ctx.font = '10px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(landmark.name.charAt(0), landmark.x, landmark.y + 2);
+        ctx.fillText(landmark.name.charAt(0), landmark.x, landmark.y + 3);
       });
     }
     
     // Draw legend
     drawLegend(ctx);
     
-  }, [selectedHour, hoveredVendor, heatMapData, marketLayout]);
+  }, [selectedHour, hoveredVendor, heatMapData, marketLayout, showTopography]);
 
   const drawLegend = (ctx) => {
     const legendX = 20;
     const legendY = 400;
     
-    // Legend background
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
     ctx.fillRect(legendX, legendY, 200, 80);
     ctx.strokeStyle = '#dee2e6';
+    ctx.lineWidth = 2;
     ctx.strokeRect(legendX, legendY, 200, 80);
     
-    // Legend title
     ctx.fillStyle = '#212529';
     ctx.font = 'bold 12px Arial';
     ctx.textAlign = 'left';
     ctx.fillText('Traffic Intensity', legendX + 10, legendY + 20);
     
-    // Legend colors
     const legendItems = [
       { color: 'rgba(0, 255, 0, 0.4)', label: 'Low' },
       { color: 'rgba(255, 255, 0, 0.6)', label: 'Medium' },
@@ -258,7 +387,6 @@ const FarmersMarketHeatMap = () => {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     
-    // Check if click is on a vendor
     const clickedVendor = heatMapData.find(vendor => {
       if (!vendor.location) return false;
       const distance = Math.sqrt(Math.pow(x - vendor.location.x, 2) + Math.pow(y - vendor.location.y, 2));
@@ -302,8 +430,7 @@ const FarmersMarketHeatMap = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
-      <div className="flex flex-col lg:flex-row gap-6 text-gray-900 mb-2">
-        {/* Controls */}
+      <div className="flex flex-col lg:flex-row gap-6">
         <div className="lg:w-1/4 space-y-4">
           <div>
             <div className="flex items-center justify-between mb-4">
@@ -330,7 +457,6 @@ const FarmersMarketHeatMap = () => {
               </div>
             )}
             
-            {/* Time Controls */}
             <div className="space-y-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -366,17 +492,35 @@ const FarmersMarketHeatMap = () => {
                   <span>7PM</span>
                 </div>
               </div>
+
+              <div className="flex items-center justify-between py-2">
+                <label className="flex items-center text-sm font-medium text-gray-700">
+                  <Map className="w-4 h-4 mr-2" />
+                  Topography
+                </label>
+                <button
+                  onClick={() => setShowTopography(!showTopography)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    showTopography ? 'bg-primary-600' : 'bg-gray-200'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      showTopography ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
             </div>
           </div>
           
-          {/* Vendor Info */}
           {hoveredVendor && (
             <div className="bg-gray-50 p-4 rounded-lg">
               <h4 className="font-semibold text-gray-900 mb-2">Vendor Details</h4>
               {(() => {
                 const stats = getVendorStats(hoveredVendor);
                 return stats ? (
-                  <div className="space-y-2 text-sm text-gray-900 mb-2">
+                  <div className="space-y-2 text-sm">
                     <div><strong>{stats.name}</strong></div>
                     {stats.boothNumber && <div>Booth: {stats.boothNumber}</div>}
                     <div className="flex items-center">
@@ -404,7 +548,6 @@ const FarmersMarketHeatMap = () => {
             </div>
           )}
           
-          {/* Quick Stats */}
           <div className="bg-primary-50 p-4 rounded-lg">
             <h4 className="font-semibold text-primary-900 mb-2">Current Stats</h4>
             <div className="space-y-1 text-sm text-primary-800">
@@ -423,9 +566,9 @@ const FarmersMarketHeatMap = () => {
             </div>
           </div>
         </div>
-        {/* Heat Map Canvas */}
+        
         <div className="lg:w-3/4">
-          <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <div className="border border-gray-200 rounded-lg overflow-hidden shadow-inner">
             <canvas 
               ref={canvasRef}
               width={marketLayout?.dimensions?.width || defaultDimensions.width}
@@ -436,7 +579,7 @@ const FarmersMarketHeatMap = () => {
             />
           </div>
           <p className="text-sm text-gray-500 mt-2">
-            Click on vendor booths to see detailed information. Drag the time slider to see traffic patterns throughout the day.
+            Click on vendor booths to see detailed information. Toggle topography to see the market layout with paths, trees, and facilities.
             {heatMapData.length === 0 && ' No traffic data available for the selected time range.'}
           </p>
         </div>
