@@ -75,20 +75,61 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '16rem',
+        backgroundColor: '#f8fafc',
+        minHeight: '100vh'
+      }}>
+        <div style={{
+          width: '3rem',
+          height: '3rem',
+          border: '3px solid #e5e7eb',
+          borderTop: '3px solid #3b82f6',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }}></div>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div style={{ 
+      padding: '1.5rem', 
+      backgroundColor: '#fef7f7', 
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1.5rem'
+    }}>
       {/* Header */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h1 className="text-2xl font-bold text-gray-900">
+      <div style={{ 
+        backgroundColor: 'white', 
+        padding: '1.5rem', 
+        borderRadius: '0.5rem', 
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        marginBottom: '0.5rem'
+      }}>
+        <h1 style={{ 
+          fontSize: '1.5rem', 
+          fontWeight: 'bold', 
+          color: '#dc2626',
+          marginBottom: '0.5rem'
+        }}>
           Welcome back, {user?.name}!
         </h1>
-        <p className="text-gray-600">
+        <p style={{ 
+          color: '#6b7280',
+          margin: 0
+        }}>
           Here's your farmers market analytics dashboard
         </p>
       </div>
@@ -98,13 +139,29 @@ const Dashboard = () => {
       </div>
 
       {/* Date Range Picker */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4 text-black mb-2">Select Date Range</h3>
+      <div style={{ 
+        backgroundColor: 'white', 
+        padding: '1.5rem', 
+        borderRadius: '0.5rem', 
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        marginBottom: '0.5rem'
+      }}>
+        <h3 style={{ 
+          fontSize: '1.125rem', 
+          fontWeight: '600', 
+          marginBottom: '1rem', 
+          color: '#dc2626'
+        }}>Select Date Range</h3>
         <DateRangePicker onDateRangeChange={handleDateRangeChange} />
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-black mb-2">
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+        gap: '1.5rem',
+        marginBottom: '0.5rem'
+      }}>
         <StatsCard
           title="Total Visitors"
           value={stats.totalVisitors}
@@ -136,19 +193,53 @@ const Dashboard = () => {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Weekly Traffic Trend</h3>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
+        gap: '1.5rem'
+      }}>
+        <div style={{ 
+          backgroundColor: 'white', 
+          padding: '1.5rem', 
+          borderRadius: '0.5rem', 
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+        }}>
+          <h3 style={{ 
+            fontSize: '1.125rem', 
+            fontWeight: '600', 
+            marginBottom: '1rem', 
+            color: '#dc2626'
+          }}>Weekly Traffic Trend</h3>
           <TrafficChart data={filteredTrafficData} />
         </div>
         
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Weather Impact Analysis</h3>
+        <div style={{ 
+          backgroundColor: 'white', 
+          padding: '1.5rem', 
+          borderRadius: '0.5rem', 
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+        }}>
+          <h3 style={{ 
+            fontSize: '1.125rem', 
+            fontWeight: '600', 
+            marginBottom: '1rem', 
+            color: '#dc2626'
+          }}>Weather Impact Analysis</h3>
           <WeatherChart data={filteredTrafficData} />
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Event Attendees Over Time</h3>
+        <div style={{ 
+          backgroundColor: 'white', 
+          padding: '1.5rem', 
+          borderRadius: '0.5rem', 
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+        }}>
+          <h3 style={{ 
+            fontSize: '1.125rem', 
+            fontWeight: '600', 
+            marginBottom: '1rem', 
+            color: '#dc2626'
+          }}>Event Attendees Over Time</h3>
           <EventChart data={filteredEventData} />
         </div>
       </div>

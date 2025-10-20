@@ -26,7 +26,7 @@ const registerUser = async (req, res) => {
       name,
       email,
       password,
-      role: role || 'vendor',
+      role: (role === 'super_admin' ? 'vendor' : role) || 'vendor', // Prevent direct registration as super_admin
       company,
     });
 

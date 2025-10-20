@@ -14,40 +14,109 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-red-700 shadow-lg">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
-          <Link to="/" className="flex items-center space-x-2 text-xl font-bold text-primary-600">
+    <nav style={{
+      backgroundColor: '#dc2626',
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+      padding: '1rem 0'
+    }}>
+      <div style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '0 1rem'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <Link to="/" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '1.25rem',
+            fontWeight: 'bold',
+            color: '#fef2f2',
+            textDecoration: 'none'
+          }}>
             <img src={logo} alt="farMar" width={60} height={60} /> 
-            <span className="text-white">Farmers Market Analytics</span>
+            <span style={{ color: 'white' }}>Farmers Market Analytics</span>
           </Link>
           
           {isAuthenticated ? (
-            <div className="flex items-center space-x-4">
-              <Link to="/profile" className="flex items-center space-x-2 text-gray-700 hover:text-primary-700 transition">
-                <User className="w-5 h-5" />
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem'
+            }}>
+              <Link to="/profile" style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                color: '#fef2f2',
+                textDecoration: 'none',
+                padding: '0.5rem',
+                borderRadius: '0.25rem',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#b91c1c'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+              >
+                <User style={{ width: '1.25rem', height: '1.25rem' }} />
                 <span>Welcome, {user?.name}</span>
-                <span className="text-sm text-gray-500 capitalize">({user?.role})</span>
+                <span style={{
+                  fontSize: '0.875rem',
+                  color: '#fecaca',
+                  textTransform: 'capitalize'
+                }}>({user?.role})</span>
               </Link>
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-1 bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 transition"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.25rem',
+                  backgroundColor: '#16a34a',
+                  color: 'white',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '0.25rem',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#16a34a'}
               >
-                <LogOut className="w-4 h-4" />
-                <span className="text-white">Logout</span>
+                <LogOut style={{ width: '1rem', height: '1rem' }} />
+                <span>Logout</span>
               </button>
             </div>
           ) : (
-            <div className="text-white space-x-4">
-              <Link style={{ color: '#FFF' }}
+            <div style={{ color: 'white', display: 'flex', gap: '1rem' }}>
+              <Link style={{
+                color: '#fef2f2',
+                textDecoration: 'none',
+                fontWeight: '500',
+                padding: '0.5rem',
+                borderRadius: '0.25rem',
+                transition: 'color 0.2s'
+              }}
+              onMouseEnter={(e) => e.target.style.color = '#fca5a5'}
+              onMouseLeave={(e) => e.target.style.color = '#fef2f2'}
                 to="/login"
-                className="text-primary-600 hover:text-primary-700 font-medium"
               >
                 Login
               </Link>
-              <Link  style={{ color: '#FFF' }}
+              <Link style={{
+                backgroundColor: '#16a34a',
+                color: 'white',
+                padding: '0.5rem 1rem',
+                borderRadius: '0.25rem',
+                textDecoration: 'none',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#16a34a'}
                 to="/register"
-                className="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 transition"
               >
                 Sign Up
               </Link>

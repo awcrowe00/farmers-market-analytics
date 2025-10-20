@@ -32,27 +32,70 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-950 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h2 className="mt-4 text-3xl font-extrabold text-white">
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#fef7f7',
+      padding: '3rem 1rem'
+    }}>
+      <div style={{
+        maxWidth: '28rem',
+        width: '100%',
+        backgroundColor: 'white',
+        padding: '2rem',
+        borderRadius: '0.5rem',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '2rem'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <h2 style={{
+            marginTop: '1rem',
+            fontSize: '1.875rem',
+            fontWeight: '800',
+            color: '#dc2626'
+          }}>
             Sign in to your account
           </h2>
-          <p className="mt-2 text-sm text-white">
+          <p style={{
+            marginTop: '0.5rem',
+            fontSize: '0.875rem',
+            color: '#6b7280'
+          }}>
             Access your farmers market analytics dashboard
           </p>
         </div>
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form style={{
+          marginTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem'
+        }} onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div style={{
+              backgroundColor: '#fef2f2',
+              border: '1px solid #fecaca',
+              color: '#dc2626',
+              padding: '0.75rem 1rem',
+              borderRadius: '0.25rem'
+            }}>
               {error}
             </div>
           )}
           
-          <div className="space-y-4">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-white">
+              <label htmlFor="email" style={{
+                display: 'block',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                color: '#dc2626',
+                marginBottom: '0.5rem'
+              }}>
                 Email address
               </label>
               <input
@@ -60,7 +103,17 @@ const Login = () => {
                 name="email"
                 type="email"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-white placeholder-white text-white rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '0.25rem',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#dc2626'}
+                onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
@@ -68,7 +121,13 @@ const Login = () => {
             </div>
             
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white">
+              <label htmlFor="password" style={{
+                display: 'block',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                color: '#dc2626',
+                marginBottom: '0.5rem'
+              }}>
                 Password
               </label>
               <input
@@ -76,7 +135,17 @@ const Login = () => {
                 name="password"
                 type="password"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-white text-white rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '0.25rem',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#dc2626'}
+                onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
@@ -88,16 +157,41 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+              style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                padding: '0.75rem 1rem',
+                border: 'none',
+                borderRadius: '0.25rem',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                color: 'white',
+                backgroundColor: loading ? '#9ca3af' : '#16a34a',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = '#15803d')}
+              onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = '#16a34a')}
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
 
-          <div className="text-center">
-            <p className="text-sm text-white">
+          <div style={{ textAlign: 'center' }}>
+            <p style={{
+              fontSize: '0.875rem',
+              color: '#dc2626'
+            }}>
               Don't have an account?{' '}
-              <Link style={{ color: '#FFF' }} to="/register" className="font-medium text-primary-600 hover:text-primary-500">
+              <Link to="/register" style={{
+                fontWeight: '500',
+                color: '#16a34a',
+                textDecoration: 'none'
+              }}
+              onMouseEnter={(e) => e.target.style.color = '#15803d'}
+              onMouseLeave={(e) => e.target.style.color = '#16a34a'}
+              >
                 Sign up here
               </Link>
             </p>

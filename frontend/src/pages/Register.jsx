@@ -34,30 +34,30 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-950 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-primary-50 py-12 px-4 sm:px-6 lg:px-8 dark:bg-primary-950">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md dark:bg-primary-800">
         <div className="text-center">
           <div className="flex justify-center">
             <img src={logo} alt="farMar" width={60} height={60} /> 
           </div>
-          <h2 className="mt-4 text-3xl font-extrabold text-white">
+          <h2 className="mt-4 text-3xl font-extrabold text-primary-800 dark:text-white">
             Create your account
           </h2>
-          <p className="mt-2 text-sm text-white">
+          <p className="mt-2 text-sm text-primary-600 dark:text-primary-200">
             Join farmers market analytics platform
           </p>
         </div>
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-black px-4 py-3 rounded">
+            <div className="bg-secondary-50 border border-secondary-200 text-secondary-700 px-4 py-3 rounded dark:bg-secondary-900 dark:border-secondary-700 dark:text-secondary-100">
               {error}
             </div>
           )}
           
           <div className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-white">
+              <label htmlFor="name" className="block text-sm font-medium text-primary-700 dark:text-primary-200">
                 Full Name
               </label>
               <input
@@ -65,7 +65,7 @@ const Register = () => {
                 name="name"
                 type="text"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-white rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-primary-300 placeholder-primary-400 text-primary-800 rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-primary-700 dark:border-primary-600 dark:placeholder-primary-300 dark:text-white"
                 placeholder="Enter your full name"
                 value={formData.name}
                 onChange={handleChange}
@@ -73,7 +73,7 @@ const Register = () => {
             </div>
             
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-white">
+              <label htmlFor="email" className="block text-sm font-medium text-primary-700 dark:text-primary-200">
                 Email address
               </label>
               <input
@@ -81,7 +81,7 @@ const Register = () => {
                 name="email"
                 type="email"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-white rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-primary-300 placeholder-primary-400 text-primary-800 rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-primary-700 dark:border-primary-600 dark:placeholder-primary-300 dark:text-white"
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
@@ -89,7 +89,7 @@ const Register = () => {
             </div>
             
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white">
+              <label htmlFor="password" className="block text-sm font-medium text-primary-700 dark:text-primary-200">
                 Password
               </label>
               <input
@@ -97,7 +97,7 @@ const Register = () => {
                 name="password"
                 type="password"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-white rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-primary-300 placeholder-primary-400 text-primary-800 rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-primary-700 dark:border-primary-600 dark:placeholder-primary-300 dark:text-white"
                 placeholder="Create a password"
                 value={formData.password}
                 onChange={handleChange}
@@ -105,13 +105,13 @@ const Register = () => {
             </div>
             
             <div>
-              <label htmlFor="role" className="block text-sm font-medium text-white">
+              <label htmlFor="role" className="block text-sm font-medium text-primary-700 dark:text-primary-200">
                 Role
               </label>
               <select
                 id="role"
                 name="role"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-green-950 rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 block w-full px-3 py-2 border border-primary-300 bg-primary-100 text-primary-800 rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-primary-700 dark:border-primary-600 dark:text-white"
                 value={formData.role}
                 onChange={handleChange}
               >
@@ -125,16 +125,16 @@ const Register = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded text-white bg-secondary-600 hover:bg-secondary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500 disabled:opacity-50 dark:bg-secondary-500 dark:hover:bg-secondary-600"
             >
               {loading ? 'Creating account...' : 'Create account'}
             </button>
           </div>
 
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-primary-700 dark:text-primary-200">
               Already have an account?{' '}
-              <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500">
+              <Link to="/login" className="font-medium text-secondary-600 hover:text-secondary-700 dark:text-secondary-400 dark:hover:text-secondary-500">
                 Sign in here
               </Link>
             </p>

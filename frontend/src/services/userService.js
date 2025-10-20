@@ -27,9 +27,21 @@ const getUserProfile = async (token) => {
   return response.data;
 };
 
+const updateUserProfile = async (token, id, userData) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  };
+  const response = await axios.put(`${API_URL}/${id}`, userData, config);
+  return response.data;
+};
+
 const userService = {
   uploadProfilePicture,
   getUserProfile,
+  updateUserProfile,
 };
 
 export default userService;
