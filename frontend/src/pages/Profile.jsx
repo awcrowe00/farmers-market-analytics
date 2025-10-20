@@ -106,97 +106,239 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-primary-50 p-8 dark:bg-primary-950">
-      <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md dark:bg-primary-800">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 dark:text-gray-100">User Profile</h1>
+    <>
+      <style>
+        {`
+          .profile-container {
+            background: linear-gradient(135deg, #fef7f7 0%, #fef2f2 100%) !important;
+            min-height: 100vh;
+            padding: 2rem;
+          }
+          .profile-card {
+            background-color: #ffffff !important;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+            max-width: 56rem;
+            margin: 0 auto;
+            padding: 2rem;
+          }
+          .section-blue {
+            background-color: #fef2f2 !important;
+            border: 1px solid #fecaca !important;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+          }
+          .section-green {
+            background-color: #f0fdf4 !important;
+            border: 1px solid #bbf7d0 !important;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+          }
+          .section-purple {
+            background-color: #fef2f2 !important;
+            border: 1px solid #fecaca !important;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+          }
+          .heading-blue {
+            color: #dc2626 !important;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+          }
+          .heading-green {
+            color: #16a34a !important;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+          }
+          .heading-purple {
+            color: #dc2626 !important;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+          }
+          .main-heading {
+            color: #dc2626 !important;
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+          }
+          .btn-blue {
+            background-color: #dc2626 !important;
+            color: white !important;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.2s;
+          }
+          .btn-blue:hover {
+            background-color: #b91c1c !important;
+            transform: translateY(-1px);
+          }
+          .btn-green {
+            background-color: #16a34a !important;
+            color: white !important;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+          }
+          .btn-green:hover {
+            background-color: #15803d !important;
+            transform: translateY(-1px);
+          }
+          .btn-purple {
+            background-color: #dc2626 !important;
+            color: white !important;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+          }
+          .btn-purple:hover {
+            background-color: #b91c1c !important;
+            transform: translateY(-1px);
+          }
+          .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+          }
+          .form-input:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+          }
+          .form-label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+          }
+          .profile-image {
+            height: 6rem;
+            width: 6rem;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e5e7eb;
+          }
+          .file-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background-color: white;
+          }
+        `}
+      </style>
+      <div className="profile-container">
+      <div className="profile-card">
+        <h1 className="main-heading">👤 User Profile</h1>
 
         {/* Profile Picture Section */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4 dark:text-gray-200">Profile Picture</h2>
+        <section className="section-blue">
+          <h2 className="heading-blue">📸 Profile Picture</h2>
           <div className="flex items-center space-x-4">
             <div className="flex-shrink-0">
               <img
-                className="h-24 w-24 rounded-full object-cover"
-                src={profileImage ? `${import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5000'}/api/users/profilepicture/${profileImage}` : "https://via.placeholder.com/96"}
+                className="profile-image"
+                src={profileImage ? `${import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5001'}/uploads/${profileImage}` : "https://via.placeholder.com/96"}
                 alt="Profile"
               />
             </div>
             <div>
-              <label htmlFor="profile-picture" className="sr-only">Choose profile photo</label>
+              <label htmlFor="profile-picture" className="form-label">Choose Profile Photo</label>
               <input
                 id="profile-picture"
                 name="profile-picture"
                 type="file"
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-100 file:text-primary-700 hover:file:bg-primary-200 dark:text-gray-300 dark:file:bg-primary-700 dark:file:text-primary-50 dark:hover:file:bg-primary-600"
+                accept="image/*"
+                className="file-input"
                 onChange={handleImageChange}
               />
             </div>
           </div>
           <button
             type="button"
-            className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:bg-primary-500 dark:hover:bg-primary-600"
+            className="btn-blue"
             onClick={handleImageUpload}
+            disabled={!selectedFile}
           >
-            Save Profile Picture
+            {selectedFile ? '💾 Save Profile Picture' : '📁 Select a file first'}
           </button>
         </section>
 
         {/* Contact Information Section */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4 dark:text-gray-200">Contact Information</h2>
+        <section className="section-green">
+          <h2 className="heading-green">📞 Contact Information</h2>
           <form onSubmit={handleContactSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+              <label htmlFor="name" className="form-label">Name</label>
               <input
                 type="text"
                 id="name"
                 name="name"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-primary-700 dark:border-primary-600 dark:text-white"
+                className="form-input"
                 value={contactInfo.name}
                 onChange={handleContactInfoChange}
               />
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+              <label htmlFor="email" className="form-label">Email</label>
               <input
                 type="email"
                 id="email"
                 name="email"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-primary-700 dark:border-primary-600 dark:text-white"
+                className="form-input"
                 value={contactInfo.email}
                 onChange={handleContactInfoChange}
               />
             </div>
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
+              <label htmlFor="phone" className="form-label">Phone</label>
               <input
                 type="tel"
                 id="phone"
                 name="phone"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-primary-700 dark:border-primary-600 dark:text-white"
+                className="form-input"
                 value={contactInfo.phone}
                 onChange={handleContactInfoChange}
               />
             </div>
             <div>
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
+              <label htmlFor="address" className="form-label">Address</label>
               <input
                 type="text"
                 id="address"
                 name="address"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-primary-700 dark:border-primary-600 dark:text-white"
+                className="form-input"
                 value={contactInfo.address}
                 onChange={handleContactInfoChange}
               />
             </div>
             {user?.role === 'super_admin' && (
               <div className="md:col-span-2">
-                <label htmlFor="company" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Company</label>
+                <label htmlFor="company" className="form-label">Company</label>
                 <input
                   type="text"
                   id="company"
                   name="company"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-primary-700 dark:border-primary-600 dark:text-white"
+                  className="form-input"
                   value={contactInfo.company}
                   onChange={handleContactInfoChange}
                 />
@@ -204,11 +346,11 @@ const Profile = () => {
             )}
             {user?.role === 'super_admin' && (
               <div className="md:col-span-2">
-                <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
+                <label htmlFor="role" className="form-label">Role</label>
                 <select
                   id="role"
                   name="role"
-                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md dark:bg-primary-700 dark:border-primary-600 dark:text-white"
+                  className="form-input"
                   value={contactInfo.role}
                   onChange={handleContactInfoChange}
                 >
@@ -220,38 +362,35 @@ const Profile = () => {
               </div>
             )}
             <div className="md:col-span-2">
-              <button
-                type="submit"
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:bg-primary-500 dark:hover:bg-primary-600"
-              >
-                Save Contact Information
+              <button type="submit" className="btn-green">
+                💾 Save Contact Information
               </button>
             </div>
           </form>
         </section>
 
         {/* Settings Section */}
-        <section>
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4 dark:text-gray-200">Settings</h2>
+        <section className="section-purple">
+          <h2 className="heading-purple">⚙️ Settings</h2>
           <form onSubmit={handleSettingsSubmit} className="space-y-4">
             <div>
-              <label htmlFor="notification-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Notification Email</label>
+              <label htmlFor="notification-email" className="form-label">Notification Email</label>
               <input
                 type="email"
                 id="notification-email"
                 name="notificationEmail"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-primary-700 dark:border-primary-600 dark:text-white"
+                className="form-input"
                 value={settings.notificationEmail}
                 onChange={handleSettingsChange}
               />
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">This email will be used for important notifications.</p>
+              <p className="mt-2 text-sm text-gray-500">This email will be used for important notifications.</p>
             </div>
             <div>
-              <label htmlFor="theme" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Theme</label>
+              <label htmlFor="theme" className="form-label">Theme</label>
               <select
                 id="theme"
                 name="theme"
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md dark:bg-primary-700 dark:border-primary-600 dark:text-white"
+                className="form-input"
                 value={theme}
                 onChange={handleSettingsChange}
               >
@@ -260,17 +399,15 @@ const Profile = () => {
               </select>
             </div>
             <div>
-              <button
-                type="submit"
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:bg-primary-500 dark:hover:bg-primary-600"
-              >
-                Save Settings
+              <button type="submit" className="btn-purple">
+                ⚙️ Save Settings
               </button>
             </div>
           </form>
         </section>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

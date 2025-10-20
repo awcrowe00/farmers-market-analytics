@@ -1,15 +1,7 @@
 const User = require('../models/User');
 const asyncHandler = require('express-async-handler');
-// const path = require('path'); // No longer needed for local file paths
-const { upload, mongoose } = require('../server'); // Import the upload instance and mongoose from server.js
-
-const Grid = require('gridfs-stream');
-
-let gfs;
-mongoose.connection.once('open', () => {
-  gfs = Grid(mongoose.connection.db, mongoose.mongo);
-  gfs.collection('uploads');
-});
+const path = require('path');
+const fs = require('fs');
 
 // @desc    Upload user profile picture
 // @route   PUT /api/users/profilepicture
@@ -19,9 +11,17 @@ const uploadProfilePicture = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (user) {
-      user.profilePicture = req.file.id; // Store GridFS file ID
+      // Delete old profile picture if it exists
+      if (user.profilePicture) {
+        const oldFilePath = path.join(__dirname, '..', 'uploads', user.profilePicture);
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath);
+        }
+      }
+      
+      user.profilePicture = req.file.filename; // Store filename
       await user.save();
-      res.json({ message: 'Profile picture updated', profilePicture: user.profilePicture }); // Send file ID
+      res.json({ message: 'Profile picture updated', profilePicture: user.profilePicture });
     } else {
       res.status(404);
       throw new Error('User not found');
@@ -33,25 +33,26 @@ const uploadProfilePicture = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get user profile picture
-// @route   GET /api/users/profilepicture/:id
+// @route   GET /api/users/profilepicture/:filename
 // @access  Public
 const getProfilePicture = asyncHandler(async (req, res) => {
-  const file = await gfs.files.findOne({ _id: new mongoose.Types.ObjectId(req.params.id) });
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, '..', 'uploads', filename);
 
-  if (!file || file.length === 0) {
+  if (!fs.existsSync(filePath)) {
     return res.status(404).json({
-      err: 'No file exists'
+      err: 'File not found'
     });
   }
 
-  if (file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
-    const readstream = gfs.createReadStream(file.filename);
-    readstream.pipe(res);
-  } else {
-    res.status(404).json({
-      err: 'Not an image'
-    });
-  }
+  // Set appropriate content type based on file extension
+  const ext = path.extname(filename).toLowerCase();
+  let contentType = 'image/jpeg'; // default
+  if (ext === '.png') contentType = 'image/png';
+  else if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
+
+  res.setHeader('Content-Type', contentType);
+  res.sendFile(filePath);
 });
 
 // @desc    Update user profile

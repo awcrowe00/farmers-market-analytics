@@ -15,9 +15,17 @@ function App() {
     <AuthProvider>
       <ThemeProvider> {/* Wrap the entire application with ThemeProvider */}
         <Router>
-          <div className="min-h-screen min-w-screen bg-primary-50 dark:bg-primary-950">
+          <div style={{
+            minHeight: '100vh',
+            minWidth: '100vw',
+            backgroundColor: '#fef7f7'
+          }}>
             <Navbar />
-            <main className="container mx-auto px-4 py-8">
+            <main style={{
+              maxWidth: '1200px',
+              margin: '0 auto',
+              padding: '2rem 1rem'
+            }}>
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
