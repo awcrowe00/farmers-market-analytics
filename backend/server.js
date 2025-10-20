@@ -18,6 +18,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use('/api/heatmap', require('./routes/heatMap')); // Heatmap routes
 
 // Debug middleware
 app.use((req, res, next) => {
@@ -87,8 +88,7 @@ app.get('/api/test', (req, res) => {
 
 // Export upload and mongoose before starting the server
 module.exports = { upload, mongoose, app };
-
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

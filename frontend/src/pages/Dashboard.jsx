@@ -6,8 +6,9 @@ import WeatherChart from '../components/Charts/WeatherChart';
 import EventChart from '../components/Charts/EventChart';
 import DateRangePicker from '../components/Charts/DatePicker';
 import StatsCard from '../components/Dashboard/StatsCard';
+import FarmersMarketHeatMap from '../components/HeatMap/FarmersMarketHeatMap';
 import { Users, TrendingUp, Cloud, Clock } from 'lucide-react';
-import eventService from '../services/eventService';
+// import eventService from '../services/eventService';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -44,15 +45,15 @@ const Dashboard = () => {
       setLoading(false);
     }, 1000);
 
-    const fetchEventData = async () => {
-      try {
-        const data = await eventService.getEventData();
-        setEventData(data);
-      } catch (error) {
-        console.error('Error fetching event data:', error);
-      }
-    };
-    fetchEventData();
+    // const fetchEventData = async () => {
+    //   try {
+    //     const data = await eventService.getEventData();
+    //     setEventData(data);
+    //   } catch (error) {
+    //     console.error('Error fetching event data:', error);
+    //   }
+    // };
+    // fetchEventData();
 
   }, []);
 
@@ -131,6 +132,10 @@ const Dashboard = () => {
         }}>
           Here's your farmers market analytics dashboard
         </p>
+      </div>
+
+      <div className="col-span-full">
+        <FarmersMarketHeatMap />
       </div>
 
       {/* Date Range Picker */}

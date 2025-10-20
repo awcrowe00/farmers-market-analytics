@@ -8,7 +8,7 @@ const vendorSchema = new mongoose.Schema({
   },
   company: {
     type: String,
-    required: true,
+    required: false,
     default: 'Default Company',
   },
   category: {

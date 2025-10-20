@@ -1,13 +1,24 @@
+// backend/controllers/eventDataController.js
 const EventData = require('../models/EventData');
 
 // Get all event data
 exports.getAllEventData = async (req, res) => {
   try {
+    // Debug logging
+    console.log('getAllEventData called');
+    console.log('User from request:', req.user);
+    console.log('User company:', req.user?.company);
+    
     const eventData = await EventData.find({
       company: req.user.company,
     });
+    
+    console.log('Found event data count:', eventData.length);
+    console.log('Event data:', eventData);
+    
     res.status(200).json(eventData);
   } catch (error) {
+    console.error('Error in getAllEventData:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -29,4 +40,3 @@ exports.createEventData = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-

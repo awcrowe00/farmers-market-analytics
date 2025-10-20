@@ -9,7 +9,7 @@ const trafficDataSchema = new mongoose.Schema({
   },
   company: {
     type: String,
-    required: true,
+    required: false,
   },
   timestamp: {
     type: Date,
