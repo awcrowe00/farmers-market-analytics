@@ -326,27 +326,6 @@ const FarmersMarketHeatMap = () => {
       );
     });
     
-    // Draw landmarks
-    if (marketLayout.landmarks && showTopography) {
-      marketLayout.landmarks.forEach(landmark => {
-        // Landmark shadow
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-        ctx.fillRect(landmark.x - 8, landmark.y - 8, 20, 20);
-        
-        // Landmark
-        ctx.fillStyle = '#8d6e63';
-        ctx.fillRect(landmark.x - 10, landmark.y - 10, 20, 20);
-        ctx.strokeStyle = '#5d4037';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(landmark.x - 10, landmark.y - 10, 20, 20);
-        
-        ctx.fillStyle = '#fff';
-        ctx.font = '10px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(landmark.name.charAt(0), landmark.x, landmark.y + 3);
-      });
-    }
-    
     // Draw legend
     drawLegend(ctx);
     

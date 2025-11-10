@@ -1,15 +1,24 @@
 const mongoose = require('mongoose');
-const Vendor = require('../models/Vendor');
-const User = require('../models/User');
-const TrafficData = require('../models/TrafficData');
-require('dotenv').config();
+const Vendor = require('./models/Vendor');
+const User = require('./models/User');
+const TrafficData = require('./models/TrafficData');
+const path = require('path');
+
+// Load .env from the backend directory (go up one level from utils)
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const seedDatabase = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB');
 
-    // Create sample vendors
+    // Clear existing data first
+    console.log('Clearing existing data...');
+    await Vendor.deleteMany({});
+    await TrafficData.deleteMany({});
+    console.log('Existing data cleared');
+
+    // Create sample vendors (your existing vendor code)
     const sampleVendors = [
       { name: "Fresh Produce Farm", category: "produce", boothNumber: "A1", location: { x: 150, y: 100 } },
       { name: "Artisan Bread Co", category: "bakery", boothNumber: "A2", location: { x: 250, y: 100 } },
@@ -34,17 +43,19 @@ const seedDatabase = async () => {
     const vendors = await Vendor.insertMany(sampleVendors);
     console.log(`Created ${vendors.length} vendors`);
 
-    // Generate traffic data for the last 7 days
+    // Generate traffic data for the last 30 days (including today!)
     console.log('Generating traffic data...');
     const trafficData = [];
     const now = new Date();
 
-    for (let day = 7; day >= 0; day--) {
+    // Generate data for past 30 days INCLUDING TODAY
+    for (let day = 30; day >= 0; day--) {
       const date = new Date(now);
       date.setDate(date.getDate() - day);
       
-      // Only weekends (assuming farmer's market is Sat & Sun)
-      if (date.getDay() !== 0 && date.getDay() !== 6) continue;
+      // *** REMOVED THE WEEKEND-ONLY FILTER ***
+      // Generate data for ALL days, not just weekends
+      // if (date.getDay() !== 0 && date.getDay() !== 6) continue;
 
       // Generate data for market hours (8 AM to 6 PM)
       for (let hour = 8; hour <= 18; hour++) {
@@ -64,9 +75,12 @@ const seedDatabase = async () => {
           // Add variation
           baseTraffic += Math.floor(Math.random() * 10);
 
-          // Weekend boost
+          // Weekend boost (keep this for realism)
           if (date.getDay() === 6 || date.getDay() === 0) {
-            baseTraffic *= 1.3;
+            baseTraffic *= 1.5;
+          } else {
+            // Weekdays still have traffic, just less
+            baseTraffic *= 0.8;
           }
 
           // Peak hours boost (10 AM - 2 PM)
@@ -87,16 +101,16 @@ const seedDatabase = async () => {
             vendorId: vendor._id,
             timestamp: new Date(date),
             customerCount: Math.max(0, finalTraffic),
-            dwellTime: Math.floor(Math.random() * 240) + 60, // 1-5 minutes
+            dwellTime: Math.floor(Math.random() * 240) + 60,
             weather: {
-              temperature: Math.floor(Math.random() * 25) + 55, // 55-80°F
+              temperature: Math.floor(Math.random() * 25) + 55,
               condition: weather,
               humidity: Math.floor(Math.random() * 40) + 30,
             },
             dayOfWeek: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][date.getDay()],
             hourOfDay: hour,
             sales: {
-              estimated: finalTraffic * (Math.random() * 12 + 8), // $8-20 per customer
+              estimated: finalTraffic * (Math.random() * 12 + 8),
             }
           });
         });
@@ -110,6 +124,7 @@ const seedDatabase = async () => {
     console.log(`📊 Summary:`);
     console.log(`   - ${vendors.length} vendors`);
     console.log(`   - ${trafficData.length} traffic records`);
+    console.log(`   - Data range: last 30 days including today`);
     
     process.exit(0);
   } catch (error) {
