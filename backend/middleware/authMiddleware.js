@@ -38,9 +38,13 @@ const protect = asyncHandler(async (req, res, next) => {
 
 const authorizeRoles = (...roles) => {
   return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
     if (!roles.includes(req.user.role)) {
-      res.status(403);
-      throw new Error(`User role ${req.user.role} is not authorized to access this route`);
+      return res.status(403).json({ 
+        message: `User role ${req.user.role} is not authorized to access this route. Required roles: ${roles.join(', ')}` 
+      });
     }
     next();
   };

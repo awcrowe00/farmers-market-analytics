@@ -1,7 +1,5 @@
 const User = require('../models/User');
 const asyncHandler = require('express-async-handler');
-const path = require('path');
-const fs = require('fs');
 
 // @desc    Upload user profile picture
 // @route   PUT /api/users/profilepicture
@@ -11,17 +9,23 @@ const uploadProfilePicture = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (user) {
-      // Delete old profile picture if it exists
-      if (user.profilePicture) {
-        const oldFilePath = path.join(__dirname, '..', 'uploads', user.profilePicture);
-        if (fs.existsSync(oldFilePath)) {
-          fs.unlinkSync(oldFilePath);
-        }
-      }
+      // Convert file buffer to base64
+      const base64Image = req.file.buffer.toString('base64');
+      const contentType = req.file.mimetype;
       
-      user.profilePicture = req.file.filename; // Store filename
+      // Store image data and content type in MongoDB
+      user.profilePicture = {
+        data: base64Image,
+        contentType: contentType
+      };
+      
       await user.save();
-      res.json({ message: 'Profile picture updated', profilePicture: user.profilePicture });
+      
+      // Return a reference ID for the frontend (we'll use user ID)
+      res.json({ 
+        message: 'Profile picture updated', 
+        profilePicture: user._id.toString() // Return user ID as reference
+      });
     } else {
       res.status(404);
       throw new Error('User not found');
@@ -33,26 +37,24 @@ const uploadProfilePicture = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get user profile picture
-// @route   GET /api/users/profilepicture/:filename
+// @route   GET /api/users/profilepicture/:userId
 // @access  Public
 const getProfilePicture = asyncHandler(async (req, res) => {
-  const filename = req.params.filename;
-  const filePath = path.join(__dirname, '..', 'uploads', filename);
+  const userId = req.params.userId;
+  const user = await User.findById(userId);
 
-  if (!fs.existsSync(filePath)) {
+  if (!user || !user.profilePicture || !user.profilePicture.data) {
     return res.status(404).json({
-      err: 'File not found'
+      err: 'Profile picture not found'
     });
   }
 
-  // Set appropriate content type based on file extension
-  const ext = path.extname(filename).toLowerCase();
-  let contentType = 'image/jpeg'; // default
-  if (ext === '.png') contentType = 'image/png';
-  else if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
-
-  res.setHeader('Content-Type', contentType);
-  res.sendFile(filePath);
+  // Convert base64 to buffer
+  const imageBuffer = Buffer.from(user.profilePicture.data, 'base64');
+  
+  // Set appropriate content type
+  res.setHeader('Content-Type', user.profilePicture.contentType || 'image/jpeg');
+  res.send(imageBuffer);
 });
 
 // @desc    Update user profile
@@ -104,16 +106,124 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     email: updatedUser.email,
     role: updatedUser.role,
     company: updatedUser.company,
-    profilePicture: updatedUser.profilePicture,
+    profilePicture: updatedUser.profilePicture?.data ? updatedUser._id.toString() : null,
+    enabledGraphs: updatedUser.enabledGraphs || {
+      trafficChart: true,
+      weatherChart: true,
+      eventChart: true,
+      heatMap: true,
+    },
   });
 });
 
 // @desc    Get all users
 // @route   GET /api/users
-// @access  Private/SuperAdmin
+// @access  Private/Admin
 const getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find({}).select('-password');
-  res.json(users);
+  // Transform profilePicture to return userId if image exists
+  const usersWithTransformedProfilePicture = users.map(user => {
+    const userObj = user.toObject();
+    userObj.profilePicture = user.profilePicture?.data ? user._id.toString() : null;
+    // Ensure enabledGraphs is included
+    if (!userObj.enabledGraphs) {
+      userObj.enabledGraphs = {
+        trafficChart: true,
+        weatherChart: true,
+        eventChart: true,
+        heatMap: true,
+      };
+    }
+    return userObj;
+  });
+  res.json(usersWithTransformedProfilePicture);
+});
+
+// @desc    Delete user
+// @route   DELETE /api/users/:id
+// @access  Private/Admin
+const deleteUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  // Prevent deleting yourself
+  if (req.user._id.toString() === req.params.id) {
+    res.status(400);
+    throw new Error('Cannot delete your own account');
+  }
+
+  await User.findByIdAndDelete(req.params.id);
+
+  res.json({ message: 'User deleted successfully' });
+});
+
+// @desc    Update user company
+// @route   PUT /api/users/:id/company
+// @access  Private/Admin
+const updateUserCompany = asyncHandler(async (req, res) => {
+  const { company } = req.body;
+
+  if (!company) {
+    res.status(400);
+    throw new Error('Company is required');
+  }
+
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  user.company = company;
+  await user.save();
+
+  res.json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    company: user.company,
+  });
+});
+
+// @desc    Update user graph visibility
+// @route   PUT /api/users/:id/graphs
+// @access  Private/Admin
+const updateUserGraphs = asyncHandler(async (req, res) => {
+  const { enabledGraphs } = req.body;
+
+  if (!enabledGraphs || typeof enabledGraphs !== 'object') {
+    res.status(400);
+    throw new Error('enabledGraphs object is required');
+  }
+
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  // Update enabled graphs
+  user.enabledGraphs = {
+    trafficChart: enabledGraphs.trafficChart !== undefined ? enabledGraphs.trafficChart : user.enabledGraphs.trafficChart,
+    weatherChart: enabledGraphs.weatherChart !== undefined ? enabledGraphs.weatherChart : user.enabledGraphs.weatherChart,
+    eventChart: enabledGraphs.eventChart !== undefined ? enabledGraphs.eventChart : user.enabledGraphs.eventChart,
+    heatMap: enabledGraphs.heatMap !== undefined ? enabledGraphs.heatMap : user.enabledGraphs.heatMap,
+  };
+
+  await user.save();
+
+  res.json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    enabledGraphs: user.enabledGraphs,
+  });
 });
 
 module.exports = {
@@ -121,4 +231,7 @@ module.exports = {
   getProfilePicture,
   updateUserProfile,
   getAllUsers,
+  deleteUser,
+  updateUserCompany,
+  updateUserGraphs,
 };

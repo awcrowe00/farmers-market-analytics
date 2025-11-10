@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { BarChart3 } from 'lucide-react';
 
 const Login = () => {
@@ -12,6 +13,7 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const { login, loading } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -37,19 +39,22 @@ const Login = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#fef7f7',
-      padding: '3rem 1rem'
+      backgroundColor: theme === 'dark' ? '#1a1a1a' : '#fef7f7',
+      padding: '3rem 1rem',
+      transition: 'background-color 0.3s ease'
     }}>
       <div style={{
         maxWidth: '28rem',
         width: '100%',
-        backgroundColor: 'white',
+        backgroundColor: theme === 'dark' ? '#2d2d2d' : 'white',
+        color: theme === 'dark' ? '#f3f4f6' : '#1f2937',
         padding: '2rem',
         borderRadius: '0.5rem',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        boxShadow: theme === 'dark' ? '0 4px 6px -1px rgba(0, 0, 0, 0.3)' : '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '2rem'
+        gap: '2rem',
+        transition: 'all 0.3s ease'
       }}>
         <div style={{ textAlign: 'center' }}>
           <h2 style={{
@@ -110,7 +115,9 @@ const Login = () => {
                   borderRadius: '0.25rem',
                   fontSize: '1rem',
                   outline: 'none',
-                  transition: 'border-color 0.2s'
+                  transition: 'border-color 0.2s',
+                  backgroundColor: theme === 'dark' ? '#3d3d3d' : 'white',
+                  color: theme === 'dark' ? '#f3f4f6' : '#1f2937'
                 }}
                 onFocus={(e) => e.target.style.borderColor = '#dc2626'}
                 onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
@@ -142,7 +149,9 @@ const Login = () => {
                   borderRadius: '0.25rem',
                   fontSize: '1rem',
                   outline: 'none',
-                  transition: 'border-color 0.2s'
+                  transition: 'border-color 0.2s',
+                  backgroundColor: theme === 'dark' ? '#3d3d3d' : 'white',
+                  color: theme === 'dark' ? '#f3f4f6' : '#1f2937'
                 }}
                 onFocus={(e) => e.target.style.borderColor = '#dc2626'}
                 onBlur={(e) => e.target.style.borderColor = '#d1d5db'}

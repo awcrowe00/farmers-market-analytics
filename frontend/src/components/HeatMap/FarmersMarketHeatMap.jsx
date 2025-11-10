@@ -2,10 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Users, MapPin, TrendingUp, Calendar, RefreshCw, AlertCircle, Map } from 'lucide-react';
 import heatMapService from '../../services/heatMapService';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const FarmersMarketHeatMap = () => {
   const canvasRef = useRef(null);
   const { user, isAuthenticated } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [selectedTimeRange, setSelectedTimeRange] = useState('week');
   const [selectedHour, setSelectedHour] = useState(new Date().getHours());
   const [hoveredVendor, setHoveredVendor] = useState(null);
@@ -25,9 +28,9 @@ const FarmersMarketHeatMap = () => {
 
   if (!isAuthenticated || !user) {
     return (
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+      <div className="bg-white p-6 rounded-lg shadow-lg" style={{ backgroundColor: 'white' }}>
         <div className="text-center py-12">
-          <p className="text-gray-600">Please log in to view the heat map.</p>
+          <p className="text-gray-600" style={{ color: '#4b5563' }}>Please log in to view the heat map.</p>
         </div>
       </div>
     );
@@ -192,16 +195,16 @@ const FarmersMarketHeatMap = () => {
     ctx.fillText('MARKET ENTRANCE', width/2, 27);
 
     // Draw parking area indicator
-    ctx.strokeStyle = 'rgba(158, 158, 158, 0.5)';
+    ctx.strokeStyle = isDark ? 'rgba(200, 200, 200, 0.5)' : 'rgba(158, 158, 158, 0.5)';
     ctx.lineWidth = 2;
     ctx.setLineDash([5, 5]);
     ctx.strokeRect(620, 380, 150, 100);
     ctx.setLineDash([]);
     
-    ctx.fillStyle = 'rgba(97, 97, 97, 0.3)';
+    ctx.fillStyle = isDark ? 'rgba(97, 97, 97, 0.6)' : 'rgba(97, 97, 97, 0.3)';
     ctx.fillRect(620, 380, 150, 100);
     
-    ctx.fillStyle = '#616161';
+    ctx.fillStyle = isDark ? '#f3f4f6' : '#616161';
     ctx.font = '10px Arial';
     ctx.textAlign = 'center';
     ctx.fillText('PARKING', 695, 435);
@@ -222,11 +225,11 @@ const FarmersMarketHeatMap = () => {
     if (showTopography) {
       drawTopography(ctx, width, height);
     } else {
-      ctx.fillStyle = '#f8f9fa';
+      ctx.fillStyle = '#ffffff'; // Always white background, regardless of theme
       ctx.fillRect(0, 0, width, height);
       
       // Simple grid
-      ctx.strokeStyle = '#e9ecef';
+      ctx.strokeStyle = isDark ? '#4b5563' : '#e9ecef';
       ctx.lineWidth = 1;
       for (let x = 0; x <= width; x += 50) {
         ctx.beginPath();
@@ -347,19 +350,19 @@ const FarmersMarketHeatMap = () => {
     // Draw legend
     drawLegend(ctx);
     
-  }, [selectedHour, hoveredVendor, heatMapData, marketLayout, showTopography]);
+  }, [selectedHour, hoveredVendor, heatMapData, marketLayout, showTopography, isDark]);
 
   const drawLegend = (ctx) => {
     const legendX = 20;
     const legendY = 400;
     
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+    ctx.fillStyle = isDark ? 'rgba(45, 45, 45, 0.95)' : 'rgba(255, 255, 255, 0.95)';
     ctx.fillRect(legendX, legendY, 200, 80);
-    ctx.strokeStyle = '#dee2e6';
+    ctx.strokeStyle = isDark ? '#4b5563' : '#dee2e6';
     ctx.lineWidth = 2;
     ctx.strokeRect(legendX, legendY, 200, 80);
     
-    ctx.fillStyle = '#212529';
+    ctx.fillStyle = isDark ? '#f3f4f6' : '#212529';
     ctx.font = 'bold 12px Arial';
     ctx.textAlign = 'left';
     ctx.fillText('Traffic Intensity', legendX + 10, legendY + 20);
@@ -375,7 +378,7 @@ const FarmersMarketHeatMap = () => {
       const y = legendY + 35 + (index * 10);
       ctx.fillStyle = item.color;
       ctx.fillRect(legendX + 10, y - 5, 15, 8);
-      ctx.fillStyle = '#212529';
+      ctx.fillStyle = isDark ? '#f3f4f6' : '#212529';
       ctx.font = '10px Arial';
       ctx.fillText(item.label, legendX + 30, y);
     });
@@ -419,29 +422,30 @@ const FarmersMarketHeatMap = () => {
 
   if (loading && !heatMapData.length) {
     return (
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+      <div className="bg-white p-6 rounded-lg shadow-lg" style={{ backgroundColor: 'white' }}>
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-          <span className="ml-4 text-gray-600">Loading heat map data...</span>
+          <span className="ml-4 text-gray-600" style={{ color: '#4b5563' }}>Loading heat map data...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
+    <div className={`${isDark ? 'bg-white' : 'bg-white'} p-6 rounded-lg shadow-lg`} style={{ backgroundColor: 'white', color: isDark ? '#f3f4f6' : '#1f2937' }}>
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="lg:w-1/4 space-y-4">
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold flex items-center">
-                <MapPin className="w-5 h-5 mr-2 text-primary-600" />
+              <h3 className="text-lg font-semibold flex items-center text-gray-900" style={{ color: '#111827' }}>
+                <MapPin className="w-5 h-5 mr-2" style={{ color: '#16a34a' }} />
                 Market Heat Map
               </h3>
               <button
                 onClick={handleRefresh}
                 disabled={loading}
                 className="p-2 text-gray-500 hover:text-primary-600 transition-colors"
+                style={{ color: '#6b7280' }}
                 title="Refresh data"
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -449,24 +453,25 @@ const FarmersMarketHeatMap = () => {
             </div>
             
             {error && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
+              <div className={`${isDark ? 'bg-yellow-900' : 'bg-yellow-50'} border ${isDark ? 'border-yellow-700' : 'border-yellow-200'} rounded p-3 mb-4`} style={{ backgroundColor: isDark ? '#78350f' : '#fefce8', borderColor: isDark ? '#a16207' : '#fde047' }}>
                 <div className="flex items-start">
-                  <AlertCircle className="w-4 h-4 text-yellow-600 mr-2 mt-0.5" />
-                  <div className="text-sm text-yellow-800">{error}</div>
+                  <AlertCircle className="w-4 h-4 mr-2 mt-0.5" style={{ color: isDark ? '#fbbf24' : '#d97706' }} />
+                  <div className={`text-sm ${isDark ? 'text-yellow-200' : 'text-yellow-800'}`} style={{ color: isDark ? '#fde047' : '#92400e' }}>{error}</div>
                 </div>
               </div>
             )}
             
             <div className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Calendar className="w-4 h-4 inline mr-1" />
+                <label className="block text-sm font-medium mb-2 text-gray-700" style={{ color: '#374151' }}>
+                  <Calendar className="w-4 h-4 inline mr-1" style={{ color: '#374151' }} />
                   Time Range
                 </label>
                 <select 
                   value={selectedTimeRange} 
                   onChange={(e) => setSelectedTimeRange(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full p-2 border border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500 bg-white text-gray-900"
+                  style={{ backgroundColor: 'white', color: '#111827', borderColor: '#d1d5db' }}
                 >
                   <option value="today">Today</option>
                   <option value="week">This Week</option>
@@ -475,7 +480,7 @@ const FarmersMarketHeatMap = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium mb-2 text-gray-700" style={{ color: '#374151' }}>
                   Hour: {selectedHour}:00
                 </label>
                 <input
@@ -486,7 +491,7 @@ const FarmersMarketHeatMap = () => {
                   onChange={(e) => setSelectedHour(parseInt(e.target.value))}
                   className="w-full"
                 />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="flex justify-between text-xs mt-1 text-gray-500" style={{ color: '#6b7280' }}>
                   <span>8AM</span>
                   <span>1PM</span>
                   <span>7PM</span>
@@ -494,8 +499,8 @@ const FarmersMarketHeatMap = () => {
               </div>
 
               <div className="flex items-center justify-between py-2">
-                <label className="flex items-center text-sm font-medium text-gray-700">
-                  <Map className="w-4 h-4 mr-2" />
+                <label className="flex items-center text-sm font-medium text-gray-700" style={{ color: '#374151' }}>
+                  <Map className="w-4 h-4 mr-2" style={{ color: '#374151' }} />
                   Topography
                 </label>
                 <button
@@ -503,11 +508,13 @@ const FarmersMarketHeatMap = () => {
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                     showTopography ? 'bg-primary-600' : 'bg-gray-200'
                   }`}
+                  style={{ backgroundColor: showTopography ? '#16a34a' : '#e5e7eb' }}
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    className={`inline-block h-4 w-4 transform rounded-full transition-transform ${
                       showTopography ? 'translate-x-6' : 'translate-x-1'
                     }`}
+                    style={{ backgroundColor: 'white' }}
                   />
                 </button>
               </div>
@@ -515,24 +522,25 @@ const FarmersMarketHeatMap = () => {
           </div>
           
           {hoveredVendor && (
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-900 mb-2">Vendor Details</h4>
+            <div className={`${isDark ? 'bg-white' : 'bg-gray-50'} p-4 rounded-lg`} style={{ backgroundColor: '#f9fafb' }}>
+              <h4 className="font-semibold mb-2 text-gray-900" style={{ color: '#111827' }}>Vendor Details</h4>
               {(() => {
                 const stats = getVendorStats(hoveredVendor);
                 return stats ? (
-                  <div className="space-y-2 text-sm">
-                    <div><strong>{stats.name}</strong></div>
+                  <div className="space-y-2 text-sm text-gray-700" style={{ color: '#374151' }}>
+                    <div><strong style={{ color: '#111827' }}>{stats.name}</strong></div>
                     {stats.boothNumber && <div>Booth: {stats.boothNumber}</div>}
                     <div className="flex items-center">
-                      <Users className="w-4 h-4 mr-1" />
+                      <Users className="w-4 h-4 mr-1" style={{ color: '#374151' }} />
                       Traffic: {Math.round(stats.traffic)}%
                     </div>
                     <div className="flex items-center">
-                      <TrendingUp className="w-4 h-4 mr-1" />
+                      <TrendingUp className="w-4 h-4 mr-1" style={{ color: '#374151' }} />
                       Status: <span className={`ml-1 font-medium ${
                         stats.status === 'Very Busy' ? 'text-red-600' :
                         stats.status === 'Busy' ? 'text-orange-600' :
-                        stats.status === 'Moderate' ? 'text-yellow-600' : 'text-green-600'
+                        stats.status === 'Moderate' ? 'text-yellow-600' : 
+                        'text-green-600'
                       }`}>{stats.status}</span>
                     </div>
                     <div>Category: <span className="capitalize">{stats.category?.replace('_', ' ')}</span></div>
@@ -548,9 +556,9 @@ const FarmersMarketHeatMap = () => {
             </div>
           )}
           
-          <div className="bg-primary-50 p-4 rounded-lg">
-            <h4 className="font-semibold text-primary-900 mb-2">Current Stats</h4>
-            <div className="space-y-1 text-sm text-primary-800">
+          <div className={`${isDark ? 'bg-white' : 'bg-primary-50'} p-4 rounded-lg`} style={{ backgroundColor: '#f0fdf4' }}>
+            <h4 className="font-semibold mb-2 text-primary-900" style={{ color: '#14532d' }}>Current Stats</h4>
+            <div className="space-y-1 text-sm text-primary-800" style={{ color: '#166534' }}>
               <div>Total Vendors: {heatMapData.filter(v => !v.isLandmark).length}</div>
               {heatMapData.length > 0 && (
                 <>
@@ -559,7 +567,7 @@ const FarmersMarketHeatMap = () => {
                 </>
               )}
               {lastUpdated && (
-                <div className="text-xs text-primary-600 mt-2">
+                <div className="text-xs mt-2 text-primary-600" style={{ color: '#16a34a' }}>
                   Updated: {lastUpdated.toLocaleTimeString()}
                 </div>
               )}
@@ -568,7 +576,7 @@ const FarmersMarketHeatMap = () => {
         </div>
         
         <div className="lg:w-3/4">
-          <div className="border border-gray-200 rounded-lg overflow-hidden shadow-inner">
+          <div className={`border rounded-lg overflow-hidden shadow-inner ${isDark ? 'border-gray-700' : 'border-gray-200'}`} style={{ borderColor: isDark ? '#4b5563' : '#e5e7eb', backgroundColor: 'white' }}>
             <canvas 
               ref={canvasRef}
               width={marketLayout?.dimensions?.width || defaultDimensions.width}
@@ -578,7 +586,7 @@ const FarmersMarketHeatMap = () => {
               style={{ maxWidth: '100%', height: 'auto' }}
             />
           </div>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm mt-2 text-gray-500" style={{ color: '#6b7280' }}>
             Click on vendor booths to see detailed information. Toggle topography to see the market layout with paths, trees, and facilities.
             {heatMapData.length === 0 && ' No traffic data available for the selected time range.'}
           </p>

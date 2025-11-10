@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { LogOut, BarChart3, User } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
+import { LogOut, BarChart3, User, Sun, Moon, Shield } from 'lucide-react';
 import logo from '../../assets/FMA.svg';
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -48,6 +50,56 @@ const Navbar = () => {
               alignItems: 'center',
               gap: '1rem'
             }}>
+              <button
+                onClick={toggleTheme}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'transparent',
+                  color: '#fef2f2',
+                  padding: '0.5rem',
+                  borderRadius: '0.25rem',
+                  border: '1px solid rgba(254, 242, 242, 0.3)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  width: '2.5rem',
+                  height: '2.5rem'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = 'rgba(254, 242, 242, 0.1)';
+                  e.target.style.borderColor = '#fef2f2';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.borderColor = 'rgba(254, 242, 242, 0.3)';
+                }}
+                title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {theme === 'dark' ? (
+                  <Sun style={{ width: '1.25rem', height: '1.25rem' }} />
+                ) : (
+                  <Moon style={{ width: '1.25rem', height: '1.25rem' }} />
+                )}
+              </button>
+              {(user?.role === 'admin' || user?.role === 'super_admin') && (
+                <Link to="/admin" style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  color: '#fef2f2',
+                  textDecoration: 'none',
+                  padding: '0.5rem',
+                  borderRadius: '0.25rem',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#b91c1c'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                >
+                  <Shield style={{ width: '1.25rem', height: '1.25rem' }} />
+                  <span>Admin</span>
+                </Link>
+              )}
               <Link to="/profile" style={{
                 display: 'flex',
                 alignItems: 'center',
