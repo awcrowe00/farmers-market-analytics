@@ -31,8 +31,28 @@ const userSchema = new mongoose.Schema({
     default: 'Default Company',
   },
   profilePicture: {
-    type: String,
-    default: '',
+    data: {
+      type: String, // Base64 encoded image data
+      default: '',
+    },
+    contentType: {
+      type: String, // e.g., 'image/jpeg', 'image/png'
+      default: '',
+    }
+  },
+  enabledGraphs: {
+    type: {
+      trafficChart: { type: Boolean, default: true },
+      weatherChart: { type: Boolean, default: true },
+      eventChart: { type: Boolean, default: true },
+      heatMap: { type: Boolean, default: true },
+    },
+    default: {
+      trafficChart: true,
+      weatherChart: true,
+      eventChart: true,
+      heatMap: true,
+    }
   }
 }, {
   timestamps: true,

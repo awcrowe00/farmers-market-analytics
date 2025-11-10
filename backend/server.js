@@ -3,15 +3,13 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 const { protect } = require('./middleware/authMiddleware'); // Import protect middleware
-const path = require('path'); // Import path module
-const multer = require('multer'); // Import multer
-const fs = require('fs'); // Import fs for file operations
+// Note: multer, path, and fs are no longer needed for profile picture storage (now in MongoDB)
 
 const app = express();
 
 // CORS Configuration
 const corsOptions = {
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -37,37 +35,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/farmers-m
   })
   .catch(err => console.log('MongoDB connection error:', err));
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-// Local file storage configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadsDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'profilePicture-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({ 
-  storage: storage,
-  fileFilter: function (req, file, cb) {
-    const filetypes = /jpeg|jpg|png/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-
-    if (mimetype && extname) {
-      return cb(null, true);
-    } else {
-      cb(new Error('Images Only!'));
-    }
-  }
-});
+// Note: Profile pictures are now stored in MongoDB, not in the filesystem
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -77,8 +45,7 @@ const eventDataRoutes = require('./routes/eventData');
 app.use('/api/eventData', protect, eventDataRoutes);
 app.use('/api/users', require('./routes/user'));
 
-// Serve static files from uploads directory
-app.use('/uploads', express.static(uploadsDir));
+// Note: Profile pictures are served from MongoDB via /api/users/profilepicture/:userId
 
 
 // Test route
@@ -86,8 +53,8 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'Farmers Market Analytics API is running!' });
 });
 
-// Export upload and mongoose before starting the server
-module.exports = { upload, mongoose, app };
+// Export mongoose and app before starting the server
+module.exports = { mongoose, app };
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

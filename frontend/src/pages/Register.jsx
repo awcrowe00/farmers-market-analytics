@@ -11,6 +11,7 @@ const Register = () => {
     email: '',
     password: '',
     role: 'vendor',
+    company: '',
   });
   const [error, setError] = useState('');
   const { register, loading } = useAuth();
@@ -105,6 +106,21 @@ const Register = () => {
             </div>
             
             <div>
+              <label htmlFor="company" className="block text-sm font-medium text-primary-700 dark:text-primary-200">
+                Company
+              </label>
+              <input
+                id="company"
+                name="company"
+                type="text"
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-primary-300 placeholder-primary-400 text-primary-800 rounded focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-primary-700 dark:border-primary-600 dark:placeholder-primary-300 dark:text-white"
+                placeholder="Enter your company name"
+                value={formData.company}
+                onChange={handleChange}
+              />
+            </div>
+            
+            <div>
               <label htmlFor="role" className="block text-sm font-medium text-primary-700 dark:text-primary-200">
                 Role
               </label>
@@ -117,6 +133,7 @@ const Register = () => {
               >
                 <option value="vendor">Vendor</option>
                 <option value="market_manager">Market Manager</option>
+                <option value="admin">Admin</option>
               </select>
             </div>
           </div>

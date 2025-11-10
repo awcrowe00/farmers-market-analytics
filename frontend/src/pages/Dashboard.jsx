@@ -134,9 +134,11 @@ const Dashboard = () => {
         </p>
       </div>
 
-      <div className="col-span-full">
-        <FarmersMarketHeatMap />
-      </div>
+      {(!user?.enabledGraphs || user.enabledGraphs.heatMap !== false) && (
+        <div className="col-span-full">
+          <FarmersMarketHeatMap />
+        </div>
+      )}
 
       {/* Date Range Picker */}
       <div style={{ 
@@ -198,50 +200,56 @@ const Dashboard = () => {
         gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
         gap: '1.5rem'
       }}>
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '1.5rem', 
-          borderRadius: '0.5rem', 
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-        }}>
-          <h3 style={{ 
-            fontSize: '1.125rem', 
-            fontWeight: '600', 
-            marginBottom: '1rem', 
-            color: '#dc2626'
-          }}>Weekly Traffic Trend</h3>
-          <TrafficChart data={filteredTrafficData} />
-        </div>
+        {(!user?.enabledGraphs || user.enabledGraphs.trafficChart !== false) && (
+          <div style={{ 
+            backgroundColor: 'white', 
+            padding: '1.5rem', 
+            borderRadius: '0.5rem', 
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h3 style={{ 
+              fontSize: '1.125rem', 
+              fontWeight: '600', 
+              marginBottom: '1rem', 
+              color: '#dc2626'
+            }}>Weekly Traffic Trend</h3>
+            <TrafficChart data={filteredTrafficData} />
+          </div>
+        )}
         
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '1.5rem', 
-          borderRadius: '0.5rem', 
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-        }}>
-          <h3 style={{ 
-            fontSize: '1.125rem', 
-            fontWeight: '600', 
-            marginBottom: '1rem', 
-            color: '#dc2626'
-          }}>Weather Impact Analysis</h3>
-          <WeatherChart data={filteredTrafficData} />
-        </div>
+        {(!user?.enabledGraphs || user.enabledGraphs.weatherChart !== false) && (
+          <div style={{ 
+            backgroundColor: 'white', 
+            padding: '1.5rem', 
+            borderRadius: '0.5rem', 
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h3 style={{ 
+              fontSize: '1.125rem', 
+              fontWeight: '600', 
+              marginBottom: '1rem', 
+              color: '#dc2626'
+            }}>Weather Impact Analysis</h3>
+            <WeatherChart data={filteredTrafficData} />
+          </div>
+        )}
 
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '1.5rem', 
-          borderRadius: '0.5rem', 
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-        }}>
-          <h3 style={{ 
-            fontSize: '1.125rem', 
-            fontWeight: '600', 
-            marginBottom: '1rem', 
-            color: '#dc2626'
-          }}>Event Attendees Over Time</h3>
-          <EventChart data={filteredEventData} />
-        </div>
+        {(!user?.enabledGraphs || user.enabledGraphs.eventChart !== false) && (
+          <div style={{ 
+            backgroundColor: 'white', 
+            padding: '1.5rem', 
+            borderRadius: '0.5rem', 
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h3 style={{ 
+              fontSize: '1.125rem', 
+              fontWeight: '600', 
+              marginBottom: '1rem', 
+              color: '#dc2626'
+            }}>Event Attendees Over Time</h3>
+            <EventChart data={filteredEventData} />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -116,6 +116,7 @@ const Profile = () => {
           }
           .profile-card {
             background-color: #ffffff !important;
+            color: #1f2937 !important;
             border-radius: 1rem;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border: 1px solid #e2e8f0;
@@ -129,6 +130,7 @@ const Profile = () => {
             border-radius: 0.75rem;
             margin-bottom: 2rem;
             padding: 1.5rem;
+            color: #1f2937 !important;
           }
           .section-green {
             background-color: #f0fdf4 !important;
@@ -136,12 +138,14 @@ const Profile = () => {
             border-radius: 0.75rem;
             margin-bottom: 2rem;
             padding: 1.5rem;
+            color: #1f2937 !important;
           }
           .section-purple {
             background-color: #fef2f2 !important;
             border: 1px solid #fecaca !important;
             border-radius: 0.75rem;
             padding: 1.5rem;
+            color: #1f2937 !important;
           }
           .heading-blue {
             color: #dc2626 !important;
@@ -218,6 +222,8 @@ const Profile = () => {
             border-radius: 0.5rem;
             font-size: 1rem;
             transition: border-color 0.2s;
+            background-color: white !important;
+            color: #1f2937 !important;
           }
           .form-input:focus {
             outline: none;
@@ -227,7 +233,7 @@ const Profile = () => {
           .form-label {
             display: block;
             font-weight: 500;
-            color: #374151;
+            color: #374151 !important;
             margin-bottom: 0.5rem;
           }
           .profile-image {
@@ -242,7 +248,11 @@ const Profile = () => {
             padding: 0.5rem;
             border: 1px solid #d1d5db;
             border-radius: 0.5rem;
-            background-color: white;
+            background-color: white !important;
+            color: #1f2937 !important;
+          }
+          .text-gray-500 {
+            color: #6b7280 !important;
           }
         `}
       </style>
@@ -257,7 +267,7 @@ const Profile = () => {
             <div className="flex-shrink-0">
               <img
                 className="profile-image"
-                src={profileImage ? `${import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5001'}/uploads/${profileImage}` : "https://via.placeholder.com/96"}
+                src={profileImage ? `${import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5001'}/api/users/profilepicture/${profileImage}` : "https://via.placeholder.com/96"}
                 alt="Profile"
               />
             </div>
@@ -397,6 +407,7 @@ const Profile = () => {
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
               </select>
+              <p className="mt-2 text-sm text-gray-500">Theme changes are applied immediately.</p>
             </div>
             <div>
               <button type="submit" className="btn-purple">
