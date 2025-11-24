@@ -468,16 +468,10 @@ const FarmersMarketHeatMap = () => {
             ) : null;
           })()}
           
-<<<<<<< Updated upstream
-          <div className="bg-white p-4 rounded-lg" style={{ backgroundColor: 'white' }}>
-            <h4 className="font-semibold mb-2 text-gray-900" style={{ color: '#111827' }}>Current Stats</h4>
-            <div className="space-y-1 text-sm text-gray-800" style={{ color: '#1f2937' }}>
-=======
           {/* Stats */}
           <div style={{ backgroundColor: '#f0fdf4', padding: '1rem', borderRadius: '0.5rem' }}>
             <h4 style={{ fontWeight: '600', marginBottom: '0.5rem', color: '#14532d' }}>Current Stats</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.875rem', color: '#166534' }}>
->>>>>>> Stashed changes
               <div>Total Vendors: {heatMapData.filter(v => !v.isLandmark).length}</div>
               {heatMapData.length > 0 && (
                 <>
@@ -486,11 +480,7 @@ const FarmersMarketHeatMap = () => {
                 </>
               )}
               {lastUpdated && (
-<<<<<<< Updated upstream
-                <div className="text-xs mt-2 text-gray-600" style={{ color: '#6b7280' }}>
-=======
                 <div style={{ fontSize: '0.75rem', marginTop: '0.5rem', color: '#16a34a' }}>
->>>>>>> Stashed changes
                   Updated: {lastUpdated.toLocaleTimeString()}
                 </div>
               )}

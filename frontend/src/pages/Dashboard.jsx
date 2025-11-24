@@ -24,17 +24,7 @@ const Dashboard = () => {
     weatherImpact: 0,
   });
 
-<<<<<<< Updated upstream
-  // Refresh user data on mount to get latest enabledGraphs from MongoDB
-  useEffect(() => {
-    if (refreshUser) {
-      refreshUser();
-    }
-  }, [refreshUser]);
-
-=======
   // FIXED: Only ONE useEffect, not nested
->>>>>>> Stashed changes
   useEffect(() => {
     // Simulate loading data
     setTimeout(() => {
