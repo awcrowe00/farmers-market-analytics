@@ -1,44 +1,53 @@
 // frontend/src/services/eventService.js
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:5001/api';
+const API_URL = '/api/events';
 
 const getAuthToken = () => {
-  console.log('Raw localStorage user:', localStorage.getItem('user')); // Debug log
-  
   const user = JSON.parse(localStorage.getItem('user'));
-  console.log('Parsed user object:', user); // Debug log
-  console.log('User token:', user?.token); // Debug log
-  
-  const token = user?.token ? `Bearer ${user.token}` : '';
-  console.log('Auth token available:', !!token);
-  console.log('Full token:', token); // Debug log
-  return token;
+  return user?.token ? `Bearer ${user.token}` : '';
 };
 
-const getEventData = async () => {
+const getEventData = async (startDate = null, endDate = null) => {
   try {
-    console.log('Fetching from URL:', `${API_URL}/eventData`); // Debug log
-    const response = await axios.get(`${API_URL}/eventData`, { // Must match backend route
+    const params = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    
+    const response = await axios.get(`${API_URL}/data`, {
+      params,
       headers: {
         Authorization: getAuthToken(),
         'Content-Type': 'application/json',
       },
     });
-    console.log('Event service response:', response.data); // Debug log
-    return response.data;
+    
+    console.log('Event service response:', response.data);
+    return response.data.data; // Return the data array
   } catch (error) {
-    console.error('Error fetching event data:');
-    console.error('Status:', error.response?.status);
-    console.error('Status Text:', error.response?.statusText);
-    console.error('Response Data:', error.response?.data);
-    console.error('Full Error:', error.message);
+    console.error('Error fetching event data:', error);
     throw error;
   }
 };
 
-// const eventService = {
-//   getEventData,
-// };
+const createEvent = async (eventData) => {
+  try {
+    const response = await axios.post(API_URL, eventData, {
+      headers: {
+        Authorization: getAuthToken(),
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating event:', error);
+    throw error;
+  }
+};
 
-// export default eventService;
+const eventService = {
+  getEventData,
+  createEvent,
+};
+
+export default eventService;
