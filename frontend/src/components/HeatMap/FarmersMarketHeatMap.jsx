@@ -535,9 +535,9 @@ const FarmersMarketHeatMap = () => {
             </div>
           )}
           
-          <div className={`${isDark ? 'bg-white' : 'bg-primary-50'} p-4 rounded-lg`} style={{ backgroundColor: '#f0fdf4' }}>
-            <h4 className="font-semibold mb-2 text-primary-900" style={{ color: '#14532d' }}>Current Stats</h4>
-            <div className="space-y-1 text-sm text-primary-800" style={{ color: '#166534' }}>
+          <div className="bg-white p-4 rounded-lg" style={{ backgroundColor: 'white' }}>
+            <h4 className="font-semibold mb-2 text-gray-900" style={{ color: '#111827' }}>Current Stats</h4>
+            <div className="space-y-1 text-sm text-gray-800" style={{ color: '#1f2937' }}>
               <div>Total Vendors: {heatMapData.filter(v => !v.isLandmark).length}</div>
               {heatMapData.length > 0 && (
                 <>
@@ -546,7 +546,7 @@ const FarmersMarketHeatMap = () => {
                 </>
               )}
               {lastUpdated && (
-                <div className="text-xs mt-2 text-primary-600" style={{ color: '#16a34a' }}>
+                <div className="text-xs mt-2 text-gray-600" style={{ color: '#6b7280' }}>
                   Updated: {lastUpdated.toLocaleTimeString()}
                 </div>
               )}

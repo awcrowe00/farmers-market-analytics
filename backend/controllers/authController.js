@@ -37,6 +37,12 @@ const registerUser = async (req, res) => {
         email: user.email,
         role: user.role,
         company: user.company,
+        enabledGraphs: user.enabledGraphs || {
+          trafficChart: true,
+          weatherChart: true,
+          eventChart: true,
+          heatMap: true,
+        },
         token: generateToken(user._id, user.role, user.email, user.company),
       });
     } else {

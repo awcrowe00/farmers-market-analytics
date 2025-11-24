@@ -40,7 +40,13 @@ const authReducer = (state, action) => {
     case 'SET_USER':
       console.log('SET_USER payload:', action.payload);
       // Update user in localStorage as well to maintain persistence
-      const updatedUser = { ...state.user, ...action.payload };
+      // Preserve token from state.user if it exists
+      const tokenToPreserve = state.user?.token;
+      const updatedUser = { 
+        ...state.user, 
+        ...action.payload,
+        ...(tokenToPreserve && { token: tokenToPreserve }) // Explicitly preserve token
+      };
       localStorage.setItem('user', JSON.stringify(updatedUser));
       return {
         ...state,
@@ -97,6 +103,29 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'LOGOUT' });
   };
 
+  const refreshUser = async () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.token) {
+      try {
+        const updatedUser = await authService.getCurrentUser(user.token);
+        // Merge with existing user data to preserve token
+        const mergedUser = {
+          ...updatedUser,
+          token: user.token, // Keep the existing token
+        };
+        localStorage.setItem('user', JSON.stringify(mergedUser));
+        // Dispatch with merged user to update state properly
+        dispatch({ type: 'SET_USER', payload: updatedUser });
+        return mergedUser;
+      } catch (error) {
+        console.error('Error refreshing user data:', error);
+        // If refresh fails, return the existing user
+        return user;
+      }
+    }
+    return null;
+  };
+
   return (
     <AuthContext.Provider value={{
       ...state,
@@ -104,6 +133,7 @@ export const AuthProvider = ({ children }) => {
       login,
       register,
       logout,
+      refreshUser,
       setUser: (userData) => dispatch({ type: 'SET_USER', payload: userData }),
     }}>
       {children}

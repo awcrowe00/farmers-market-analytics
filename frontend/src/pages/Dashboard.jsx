@@ -11,7 +11,7 @@ import { Users, TrendingUp, Cloud, Clock } from 'lucide-react';
 // import eventService from '../services/eventService';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [trafficData, setTrafficData] = useState([]);
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +23,13 @@ const Dashboard = () => {
     peakHour: '',
     weatherImpact: 0,
   });
+
+  // Refresh user data on mount to get latest enabledGraphs from MongoDB
+  useEffect(() => {
+    if (refreshUser) {
+      refreshUser();
+    }
+  }, [refreshUser]);
 
   useEffect(() => {
     // Simulate loading data
