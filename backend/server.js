@@ -44,6 +44,7 @@ app.use('/api/traffic', protect, require('./routes/traffic'));
 const eventDataRoutes = require('./routes/eventData');
 app.use('/api/eventData', protect, eventDataRoutes);
 app.use('/api/users', require('./routes/user'));
+app.use('/api/events', require('./routes/events'));
 
 // Note: Profile pictures are served from MongoDB via /api/users/profilepicture/:userId
 

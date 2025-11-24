@@ -1,14 +1,12 @@
+// frontend/src/components/HeatMap/FarmersMarketHeatMap.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Users, MapPin, TrendingUp, Calendar, RefreshCw, AlertCircle, Map } from 'lucide-react';
 import heatMapService from '../../services/heatMapService';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
 
 const FarmersMarketHeatMap = () => {
   const canvasRef = useRef(null);
   const { user, isAuthenticated } = useAuth();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
   const [selectedTimeRange, setSelectedTimeRange] = useState('week');
   const [selectedHour, setSelectedHour] = useState(new Date().getHours());
   const [hoveredVendor, setHoveredVendor] = useState(null);
@@ -25,16 +23,6 @@ const FarmersMarketHeatMap = () => {
     8: 0.3, 9: 0.5, 10: 0.8, 11: 0.95, 12: 1.0, 13: 0.9,
     14: 0.85, 15: 0.7, 16: 0.4, 17: 0.2, 18: 0.1, 19: 0.05
   };
-
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="bg-white p-6 rounded-lg shadow-lg" style={{ backgroundColor: 'white' }}>
-        <div className="text-center py-12">
-          <p className="text-gray-600" style={{ color: '#4b5563' }}>Please log in to view the heat map.</p>
-        </div>
-      </div>
-    );
-  }
 
   useEffect(() => {
     fetchMarketLayout();
@@ -101,7 +89,6 @@ const FarmersMarketHeatMap = () => {
   };
 
   const drawTopography = (ctx, width, height) => {
-    // Draw grass/ground base
     const grassGradient = ctx.createLinearGradient(0, 0, 0, height);
     grassGradient.addColorStop(0, '#e8f5e9');
     grassGradient.addColorStop(0.5, '#c8e6c9');
@@ -109,15 +96,12 @@ const FarmersMarketHeatMap = () => {
     ctx.fillStyle = grassGradient;
     ctx.fillRect(0, 0, width, height);
 
-    // Draw subtle terrain contours
     ctx.strokeStyle = 'rgba(76, 175, 80, 0.15)';
     ctx.lineWidth = 2;
     
-    // Horizontal contour lines
     for (let y = 50; y < height; y += 80) {
       ctx.beginPath();
       ctx.moveTo(0, y);
-      
       for (let x = 0; x < width; x += 20) {
         const wave = Math.sin(x / 50) * 10;
         ctx.lineTo(x, y + wave);
@@ -125,86 +109,62 @@ const FarmersMarketHeatMap = () => {
       ctx.stroke();
     }
 
-    // Draw pathways/walkways
     ctx.fillStyle = 'rgba(139, 69, 19, 0.2)';
-    
-    // Main horizontal paths
     ctx.fillRect(50, 140, width - 100, 30);
     ctx.fillRect(50, 240, width - 100, 30);
     ctx.fillRect(50, 340, width - 100, 30);
-    
-    // Vertical paths
     ctx.fillRect(140, 50, 25, height - 100);
     ctx.fillRect(340, 50, 25, height - 100);
     ctx.fillRect(540, 50, 25, height - 100);
 
-    // Add path texture (dirt/gravel effect)
     ctx.fillStyle = 'rgba(101, 67, 33, 0.1)';
     for (let i = 0; i < 200; i++) {
       const x = Math.random() * width;
       const y = Math.random() * height;
-      
-      // Only draw on paths
       const onHorizontalPath = (y > 140 && y < 170) || (y > 240 && y < 270) || (y > 340 && y < 370);
       const onVerticalPath = (x > 140 && x < 165) || (x > 340 && x < 365) || (x > 540 && x < 565);
-      
       if (onHorizontalPath || onVerticalPath) {
         ctx.fillRect(x, y, 2, 2);
       }
     }
 
-    // Draw trees/decorative elements around the market
     const drawTree = (x, y, size) => {
-      // Tree trunk
       ctx.fillStyle = '#6d4c41';
       ctx.fillRect(x - size/6, y, size/3, size);
-      
-      // Tree foliage
       ctx.fillStyle = '#66bb6a';
       ctx.beginPath();
       ctx.arc(x, y, size * 0.8, 0, 2 * Math.PI);
       ctx.fill();
-      
-      // Highlight
       ctx.fillStyle = 'rgba(129, 199, 132, 0.6)';
       ctx.beginPath();
       ctx.arc(x - size/4, y - size/4, size * 0.4, 0, 2 * Math.PI);
       ctx.fill();
     };
 
-    // Place trees around the perimeter
     const treePositions = [
-      { x: 40, y: 60 }, { x: 760, y: 60 },
-      { x: 40, y: 180 }, { x: 760, y: 180 },
-      { x: 40, y: 300 }, { x: 760, y: 300 },
-      { x: 40, y: 420 }, { x: 760, y: 420 },
+      { x: 40, y: 60 }, { x: 760, y: 60 }, { x: 40, y: 180 }, { x: 760, y: 180 },
+      { x: 40, y: 300 }, { x: 760, y: 300 }, { x: 40, y: 420 }, { x: 760, y: 420 },
       { x: 150, y: 30 }, { x: 400, y: 30 }, { x: 650, y: 30 },
       { x: 150, y: 470 }, { x: 400, y: 470 }, { x: 650, y: 470 }
     ];
 
-    treePositions.forEach(pos => {
-      drawTree(pos.x, pos.y, 15);
-    });
+    treePositions.forEach(pos => drawTree(pos.x, pos.y, 15));
 
-    // Draw market entrance sign
     ctx.fillStyle = 'rgba(121, 85, 72, 0.8)';
-    ctx.fillRect(width/2 - 60, 10, 120, 25);
+    ctx.fillRect(width/2 - 85, 10, 170, 25);
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 14px Arial';
     ctx.textAlign = 'center';
     ctx.fillText('MARKET ENTRANCE', width/2, 27);
 
-    // Draw parking area indicator
-    ctx.strokeStyle = isDark ? 'rgba(200, 200, 200, 0.5)' : 'rgba(158, 158, 158, 0.5)';
+    ctx.strokeStyle = 'rgba(158, 158, 158, 0.5)';
     ctx.lineWidth = 2;
     ctx.setLineDash([5, 5]);
     ctx.strokeRect(620, 380, 150, 100);
     ctx.setLineDash([]);
-    
-    ctx.fillStyle = isDark ? 'rgba(97, 97, 97, 0.6)' : 'rgba(97, 97, 97, 0.3)';
+    ctx.fillStyle = 'rgba(97, 97, 97, 0.3)';
     ctx.fillRect(620, 380, 150, 100);
-    
-    ctx.fillStyle = isDark ? '#f3f4f6' : '#616161';
+    ctx.fillStyle = '#616161';
     ctx.font = '10px Arial';
     ctx.textAlign = 'center';
     ctx.fillText('PARKING', 695, 435);
@@ -221,15 +181,12 @@ const FarmersMarketHeatMap = () => {
     
     ctx.clearRect(0, 0, width, height);
     
-    // Draw topographical background
     if (showTopography) {
       drawTopography(ctx, width, height);
     } else {
-      ctx.fillStyle = '#ffffff'; // Always white background, regardless of theme
+      ctx.fillStyle = '#f8f9fa';
       ctx.fillRect(0, 0, width, height);
-      
-      // Simple grid
-      ctx.strokeStyle = isDark ? '#4b5563' : '#e9ecef';
+      ctx.strokeStyle = '#e9ecef';
       ctx.lineWidth = 1;
       for (let x = 0; x <= width; x += 50) {
         ctx.beginPath();
@@ -245,103 +202,60 @@ const FarmersMarketHeatMap = () => {
       }
     }
     
-    // Draw heat zones
     heatMapData.forEach(vendor => {
       if (!vendor.location) return;
-      
       const traffic = vendor.traffic || 0;
       const radius = 30 + (traffic / 100) * 20;
-      
       const gradient = ctx.createRadialGradient(
         vendor.location.x, vendor.location.y, 0,
         vendor.location.x, vendor.location.y, radius
       );
-      
       const heatColor = getHeatColor(traffic, selectedHour);
       gradient.addColorStop(0, heatColor);
       gradient.addColorStop(1, 'rgba(0,0,0,0)');
-      
       ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(vendor.location.x, vendor.location.y, radius, 0, 2 * Math.PI);
       ctx.fill();
     });
     
-    // Draw vendor booths
     heatMapData.forEach(vendor => {
       if (!vendor.location) return;
-      
       const isHovered = hoveredVendor === vendor.id || hoveredVendor === vendor._id;
       const boothSize = 15;
-      
       const categoryColors = {
-        produce: '#22c55e',
-        bakery: '#f59e0b',
-        dairy: '#3b82f6',
-        honey: '#fbbf24',
-        flowers: '#ec4899',
-        crafts: '#8b5cf6',
-        prepared_food: '#ef4444',
-        other: '#6b7280'
+        produce: '#22c55e', bakery: '#f59e0b', dairy: '#3b82f6',
+        honey: '#fbbf24', flowers: '#ec4899', crafts: '#8b5cf6',
+        prepared_food: '#ef4444', other: '#6b7280'
       };
       
-      // Booth shadow
       if (showTopography) {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-        ctx.fillRect(
-          vendor.location.x - boothSize/2 + 2, 
-          vendor.location.y - boothSize/2 + 2, 
-          boothSize, 
-          boothSize
-        );
+        ctx.fillRect(vendor.location.x - boothSize/2 + 2, vendor.location.y - boothSize/2 + 2, boothSize, boothSize);
       }
       
-      // Booth background
       ctx.fillStyle = isHovered ? '#007bff' : (categoryColors[vendor.category] || '#6b7280');
-      ctx.fillRect(
-        vendor.location.x - boothSize/2, 
-        vendor.location.y - boothSize/2, 
-        boothSize, 
-        boothSize
-      );
-      
-      // Booth border
+      ctx.fillRect(vendor.location.x - boothSize/2, vendor.location.y - boothSize/2, boothSize, boothSize);
       ctx.strokeStyle = isHovered ? '#0056b3' : '#374151';
       ctx.lineWidth = 2;
-      ctx.strokeRect(
-        vendor.location.x - boothSize/2, 
-        vendor.location.y - boothSize/2, 
-        boothSize, 
-        boothSize
-      );
-      
-      // Booth number
+      ctx.strokeRect(vendor.location.x - boothSize/2, vendor.location.y - boothSize/2, boothSize, boothSize);
       ctx.fillStyle = '#fff';
       ctx.font = 'bold 8px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText(
-        vendor.boothNumber || vendor.name.substring(0, 3).toUpperCase(), 
-        vendor.location.x, 
-        vendor.location.y + 2
-      );
+      ctx.fillText(vendor.boothNumber || vendor.name.substring(0, 3).toUpperCase(), vendor.location.x, vendor.location.y + 2);
     });
     
-    // Draw legend
     drawLegend(ctx);
-    
-  }, [selectedHour, hoveredVendor, heatMapData, marketLayout, showTopography, isDark]);
+  }, [selectedHour, hoveredVendor, heatMapData, marketLayout, showTopography]);
 
   const drawLegend = (ctx) => {
-    const legendX = 20;
-    const legendY = 400;
-    
-    ctx.fillStyle = isDark ? 'rgba(45, 45, 45, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+    const legendX = 20, legendY = 400;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
     ctx.fillRect(legendX, legendY, 200, 80);
-    ctx.strokeStyle = isDark ? '#4b5563' : '#dee2e6';
+    ctx.strokeStyle = '#dee2e6';
     ctx.lineWidth = 2;
     ctx.strokeRect(legendX, legendY, 200, 80);
-    
-    ctx.fillStyle = isDark ? '#f3f4f6' : '#212529';
+    ctx.fillStyle = '#212529';
     ctx.font = 'bold 12px Arial';
     ctx.textAlign = 'left';
     ctx.fillText('Traffic Intensity', legendX + 10, legendY + 20);
@@ -357,7 +271,7 @@ const FarmersMarketHeatMap = () => {
       const y = legendY + 35 + (index * 10);
       ctx.fillStyle = item.color;
       ctx.fillRect(legendX + 10, y - 5, 15, 8);
-      ctx.fillStyle = isDark ? '#f3f4f6' : '#212529';
+      ctx.fillStyle = '#212529';
       ctx.font = '10px Arial';
       ctx.fillText(item.label, legendX + 30, y);
     });
@@ -386,7 +300,6 @@ const FarmersMarketHeatMap = () => {
   const getVendorStats = (vendorId) => {
     const vendor = heatMapData.find(v => (v.id || v._id) === vendorId);
     if (!vendor) return null;
-    
     const currentTraffic = Math.round(vendor.traffic * (timeMultipliers[selectedHour] || 0.5));
     return {
       ...vendor,
@@ -399,58 +312,69 @@ const FarmersMarketHeatMap = () => {
     fetchHeatMapData();
   };
 
+  if (!isAuthenticated || !user) {
+    return (
+      <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+        <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+          <p style={{ color: '#6b7280' }}>Please log in to view the heat map.</p>
+        </div>
+      </div>
+    );
+  }
+
   if (loading && !heatMapData.length) {
     return (
-      <div className="bg-white p-6 rounded-lg shadow-lg" style={{ backgroundColor: 'white' }}>
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-          <span className="ml-4 text-gray-600" style={{ color: '#4b5563' }}>Loading heat map data...</span>
+      <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '16rem' }}>
+          <div style={{ width: '3rem', height: '3rem', border: '3px solid #e5e7eb', borderTop: '3px solid #16a34a', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+          <span style={{ marginLeft: '1rem', color: '#6b7280' }}>Loading heat map data...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`${isDark ? 'bg-white' : 'bg-white'} p-6 rounded-lg shadow-lg`} style={{ backgroundColor: 'white', color: isDark ? '#f3f4f6' : '#1f2937' }}>
-      <div className="flex flex-col lg:flex-row gap-6">
-        <div className="lg:w-1/4 space-y-4">
+    <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+      <div style={{ display: 'flex', flexDirection: 'row', gap: '1.5rem', flexWrap: 'wrap' }}>
+        {/* Left Sidebar */}
+        <div style={{ flex: '0 0 280px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* Header */}
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold flex items-center text-gray-900" style={{ color: '#111827' }}>
-                <MapPin className="w-5 h-5 mr-2" style={{ color: '#16a34a' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: '600', display: 'flex', alignItems: 'center', color: '#111827', margin: 0 }}>
+                <MapPin style={{ width: '1.25rem', height: '1.25rem', marginRight: '0.5rem', color: '#16a34a' }} />
                 Market Heat Map
               </h3>
               <button
                 onClick={handleRefresh}
                 disabled={loading}
-                className="p-2 text-gray-500 hover:text-primary-600 transition-colors"
-                style={{ color: '#6b7280' }}
+                style={{ padding: '0.5rem', color: '#6b7280', background: 'none', border: 'none', cursor: 'pointer' }}
                 title="Refresh data"
               >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw style={{ width: '1rem', height: '1rem' }} className={loading ? 'spin-animation' : ''} />
               </button>
             </div>
             
             {error && (
-              <div className={`${isDark ? 'bg-yellow-900' : 'bg-yellow-50'} border ${isDark ? 'border-yellow-700' : 'border-yellow-200'} rounded p-3 mb-4`} style={{ backgroundColor: isDark ? '#78350f' : '#fefce8', borderColor: isDark ? '#a16207' : '#fde047' }}>
-                <div className="flex items-start">
-                  <AlertCircle className="w-4 h-4 mr-2 mt-0.5" style={{ color: isDark ? '#fbbf24' : '#d97706' }} />
-                  <div className={`text-sm ${isDark ? 'text-yellow-200' : 'text-yellow-800'}`} style={{ color: isDark ? '#fde047' : '#92400e' }}>{error}</div>
+              <div style={{ backgroundColor: '#fefce8', border: '1px solid #fde047', borderRadius: '0.375rem', padding: '0.75rem', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                  <AlertCircle style={{ width: '1rem', height: '1rem', color: '#d97706', marginRight: '0.5rem', marginTop: '0.125rem' }} />
+                  <div style={{ fontSize: '0.875rem', color: '#92400e' }}>{error}</div>
                 </div>
               </div>
             )}
             
-            <div className="space-y-3">
+            {/* Controls */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700" style={{ color: '#374151' }}>
-                  <Calendar className="w-4 h-4 inline mr-1" style={{ color: '#374151' }} />
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem', color: '#374151' }}>
+                  <Calendar style={{ width: '1rem', height: '1rem', display: 'inline', marginRight: '0.25rem' }} />
                   Time Range
                 </label>
                 <select 
                   value={selectedTimeRange} 
                   onChange={(e) => setSelectedTimeRange(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-primary-500 focus:border-primary-500 bg-white text-gray-900"
-                  style={{ backgroundColor: 'white', color: '#111827', borderColor: '#d1d5db' }}
+                  style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', backgroundColor: 'white', color: '#111827' }}
                 >
                   <option value="today">Today</option>
                   <option value="week">This Week</option>
@@ -459,7 +383,7 @@ const FarmersMarketHeatMap = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700" style={{ color: '#374151' }}>
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem', color: '#374151' }}>
                   Hour: {selectedHour}:00
                 </label>
                 <input
@@ -468,76 +392,92 @@ const FarmersMarketHeatMap = () => {
                   max="19"
                   value={selectedHour}
                   onChange={(e) => setSelectedHour(parseInt(e.target.value))}
-                  className="w-full"
+                  style={{ width: '100%' }}
                 />
-                <div className="flex justify-between text-xs mt-1 text-gray-500" style={{ color: '#6b7280' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginTop: '0.25rem', color: '#6b7280' }}>
                   <span>8AM</span>
                   <span>1PM</span>
                   <span>7PM</span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between py-2">
-                <label className="flex items-center text-sm font-medium text-gray-700" style={{ color: '#374151' }}>
-                  <Map className="w-4 h-4 mr-2" style={{ color: '#374151' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem', fontWeight: '500', color: '#374151' }}>
+                  <Map style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} />
                   Topography
                 </label>
                 <button
                   onClick={() => setShowTopography(!showTopography)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    showTopography ? 'bg-primary-600' : 'bg-gray-200'
-                  }`}
-                  style={{ backgroundColor: showTopography ? '#16a34a' : '#e5e7eb' }}
+                  style={{
+                    position: 'relative',
+                    display: 'inline-flex',
+                    height: '1.5rem',
+                    width: '2.75rem',
+                    alignItems: 'center',
+                    borderRadius: '9999px',
+                    backgroundColor: showTopography ? '#16a34a' : '#e5e7eb',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.2s'
+                  }}
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full transition-transform ${
-                      showTopography ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                    style={{ backgroundColor: 'white' }}
+                    style={{
+                      display: 'inline-block',
+                      height: '1rem',
+                      width: '1rem',
+                      transform: showTopography ? 'translateX(1.5rem)' : 'translateX(0.25rem)',
+                      borderRadius: '9999px',
+                      backgroundColor: 'white',
+                      transition: 'transform 0.2s'
+                    }}
                   />
                 </button>
               </div>
             </div>
           </div>
           
-          {hoveredVendor && (
-            <div className={`${isDark ? 'bg-white' : 'bg-gray-50'} p-4 rounded-lg`} style={{ backgroundColor: '#f9fafb' }}>
-              <h4 className="font-semibold mb-2 text-gray-900" style={{ color: '#111827' }}>Vendor Details</h4>
-              {(() => {
-                const stats = getVendorStats(hoveredVendor);
-                return stats ? (
-                  <div className="space-y-2 text-sm text-gray-700" style={{ color: '#374151' }}>
-                    <div><strong style={{ color: '#111827' }}>{stats.name}</strong></div>
-                    {stats.boothNumber && <div>Booth: {stats.boothNumber}</div>}
-                    <div className="flex items-center">
-                      <Users className="w-4 h-4 mr-1" style={{ color: '#374151' }} />
-                      Traffic: {Math.round(stats.traffic)}%
-                    </div>
-                    <div className="flex items-center">
-                      <TrendingUp className="w-4 h-4 mr-1" style={{ color: '#374151' }} />
-                      Status: <span className={`ml-1 font-medium ${
-                        stats.status === 'Very Busy' ? 'text-red-600' :
-                        stats.status === 'Busy' ? 'text-orange-600' :
-                        stats.status === 'Moderate' ? 'text-yellow-600' : 
-                        'text-green-600'
-                      }`}>{stats.status}</span>
-                    </div>
-                    <div>Category: <span className="capitalize">{stats.category?.replace('_', ' ')}</span></div>
-                    {stats.avgCustomers !== undefined && (
-                      <div>Avg Customers: {stats.avgCustomers}</div>
-                    )}
-                    {stats.avgDwellTime !== undefined && (
-                      <div>Avg Visit: {Math.round(stats.avgDwellTime/60)}min</div>
-                    )}
+          {/* Vendor Details */}
+          {hoveredVendor && (() => {
+            const stats = getVendorStats(hoveredVendor);
+            return stats ? (
+              <div style={{ backgroundColor: '#f9fafb', padding: '1rem', borderRadius: '0.5rem' }}>
+                <h4 style={{ fontWeight: '600', marginBottom: '0.5rem', color: '#111827' }}>Vendor Details</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem', color: '#374151' }}>
+                  <div><strong style={{ color: '#111827' }}>{stats.name}</strong></div>
+                  {stats.boothNumber && <div>Booth: {stats.boothNumber}</div>}
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Users style={{ width: '1rem', height: '1rem', marginRight: '0.25rem' }} />
+                    Traffic: {Math.round(stats.traffic)}%
                   </div>
-                ) : null;
-              })()}
-            </div>
-          )}
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <TrendingUp style={{ width: '1rem', height: '1rem', marginRight: '0.25rem' }} />
+                    Status: <span style={{ 
+                      marginLeft: '0.25rem',
+                      fontWeight: '500',
+                      color: stats.status === 'Very Busy' ? '#dc2626' :
+                             stats.status === 'Busy' ? '#ea580c' :
+                             stats.status === 'Moderate' ? '#ca8a04' : '#16a34a'
+                    }}>{stats.status}</span>
+                  </div>
+                  <div>Category: <span style={{ textTransform: 'capitalize' }}>{stats.category?.replace('_', ' ')}</span></div>
+                  {stats.avgCustomers !== undefined && <div>Avg Customers: {stats.avgCustomers}</div>}
+                  {stats.avgDwellTime !== undefined && <div>Avg Visit: {Math.round(stats.avgDwellTime/60)}min</div>}
+                </div>
+              </div>
+            ) : null;
+          })()}
           
+<<<<<<< Updated upstream
           <div className="bg-white p-4 rounded-lg" style={{ backgroundColor: 'white' }}>
             <h4 className="font-semibold mb-2 text-gray-900" style={{ color: '#111827' }}>Current Stats</h4>
             <div className="space-y-1 text-sm text-gray-800" style={{ color: '#1f2937' }}>
+=======
+          {/* Stats */}
+          <div style={{ backgroundColor: '#f0fdf4', padding: '1rem', borderRadius: '0.5rem' }}>
+            <h4 style={{ fontWeight: '600', marginBottom: '0.5rem', color: '#14532d' }}>Current Stats</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', fontSize: '0.875rem', color: '#166534' }}>
+>>>>>>> Stashed changes
               <div>Total Vendors: {heatMapData.filter(v => !v.isLandmark).length}</div>
               {heatMapData.length > 0 && (
                 <>
@@ -546,7 +486,11 @@ const FarmersMarketHeatMap = () => {
                 </>
               )}
               {lastUpdated && (
+<<<<<<< Updated upstream
                 <div className="text-xs mt-2 text-gray-600" style={{ color: '#6b7280' }}>
+=======
+                <div style={{ fontSize: '0.75rem', marginTop: '0.5rem', color: '#16a34a' }}>
+>>>>>>> Stashed changes
                   Updated: {lastUpdated.toLocaleTimeString()}
                 </div>
               )}
@@ -554,23 +498,33 @@ const FarmersMarketHeatMap = () => {
           </div>
         </div>
         
-        <div className="lg:w-3/4">
-          <div className={`border rounded-lg overflow-hidden shadow-inner ${isDark ? 'border-gray-700' : 'border-gray-200'}`} style={{ borderColor: isDark ? '#4b5563' : '#e5e7eb', backgroundColor: 'white' }}>
+        {/* Canvas */}
+        <div style={{ flex: '1 1 500px' }}>
+          <div style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', overflow: 'hidden', boxShadow: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)' }}>
             <canvas 
               ref={canvasRef}
               width={marketLayout?.dimensions?.width || defaultDimensions.width}
               height={marketLayout?.dimensions?.height || defaultDimensions.height}
               onClick={handleCanvasClick}
-              className="cursor-pointer hover:cursor-pointer"
-              style={{ maxWidth: '100%', height: 'auto' }}
+              style={{ maxWidth: '100%', height: 'auto', cursor: 'pointer', display: 'block' }}
             />
           </div>
-          <p className="text-sm mt-2 text-gray-500" style={{ color: '#6b7280' }}>
+          <p style={{ fontSize: '0.875rem', marginTop: '0.5rem', color: '#6b7280' }}>
             Click on vendor booths to see detailed information. Toggle topography to see the market layout with paths, trees, and facilities.
             {heatMapData.length === 0 && ' No traffic data available for the selected time range.'}
           </p>
         </div>
       </div>
+      
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        .spin-animation {
+          animation: spin 1s linear infinite;
+        }
+      `}</style>
     </div>
   );
 };

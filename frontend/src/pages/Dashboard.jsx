@@ -8,7 +8,7 @@ import DateRangePicker from '../components/Charts/DatePicker';
 import StatsCard from '../components/Dashboard/StatsCard';
 import FarmersMarketHeatMap from '../components/HeatMap/FarmersMarketHeatMap';
 import { Users, TrendingUp, Cloud, Clock } from 'lucide-react';
-// import eventService from '../services/eventService';
+import eventService from '../services/eventService';
 
 const Dashboard = () => {
   const { user, refreshUser } = useAuth();
@@ -24,6 +24,7 @@ const Dashboard = () => {
     weatherImpact: 0,
   });
 
+<<<<<<< Updated upstream
   // Refresh user data on mount to get latest enabledGraphs from MongoDB
   useEffect(() => {
     if (refreshUser) {
@@ -31,10 +32,13 @@ const Dashboard = () => {
     }
   }, [refreshUser]);
 
+=======
+  // FIXED: Only ONE useEffect, not nested
+>>>>>>> Stashed changes
   useEffect(() => {
     // Simulate loading data
     setTimeout(() => {
-      // Mock data for now
+      // Mock traffic data
       const mockTrafficData = Array.from({ length: 7 }, (_, i) => ({
         date: new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).toLocaleDateString(),
         visitors: Math.floor(Math.random() * 100) + 50,
@@ -52,17 +56,25 @@ const Dashboard = () => {
       setLoading(false);
     }, 1000);
 
-    // const fetchEventData = async () => {
-    //   try {
-    //     const data = await eventService.getEventData();
-    //     setEventData(data);
-    //   } catch (error) {
-    //     console.error('Error fetching event data:', error);
-    //   }
-    // };
-    // fetchEventData();
-
-  }, []);
+    // Fetch real event data
+    const fetchEventData = async () => {
+      try {
+        const data = await eventService.getEventData();
+        console.log('Fetched event data:', data);
+        setEventData(data);
+      } catch (error) {
+        console.error('Error fetching event data:', error);
+        // Fallback to mock data if fetch fails
+        const mockEventData = Array.from({ length: 7 }, (_, i) => ({
+          date: new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).toLocaleDateString(),
+          attendees: Math.floor(Math.random() * 150) + 50,
+          eventName: 'Mock Event',
+        }));
+        setEventData(mockEventData);
+      }
+    };
+    fetchEventData();
+  }, []); // FIXED: Removed the extra closing brackets
 
   const handleDateRangeChange = (start, end) => {
     setStartDate(start);
@@ -79,6 +91,11 @@ const Dashboard = () => {
     const itemDate = new Date(item.date);
     return (!startDate || itemDate >= startDate) && (!endDate || itemDate <= endDate);
   });
+
+
+  // Right before the return statement, add:
+console.log('Event Data:', eventData);
+console.log('Filtered Event Data:', filteredEventData);
 
   if (loading) {
     return (
@@ -141,11 +158,9 @@ const Dashboard = () => {
         </p>
       </div>
 
-      {(!user?.enabledGraphs || user.enabledGraphs.heatMap !== false) && (
-        <div className="col-span-full">
-          <FarmersMarketHeatMap />
-        </div>
-      )}
+      <div className="col-span-full">
+        <FarmersMarketHeatMap />
+      </div>
 
       {/* Date Range Picker */}
       <div style={{ 
@@ -207,56 +222,50 @@ const Dashboard = () => {
         gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
         gap: '1.5rem'
       }}>
-        {(!user?.enabledGraphs || user.enabledGraphs.trafficChart !== false) && (
-          <div style={{ 
-            backgroundColor: 'white', 
-            padding: '1.5rem', 
-            borderRadius: '0.5rem', 
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-          }}>
-            <h3 style={{ 
-              fontSize: '1.125rem', 
-              fontWeight: '600', 
-              marginBottom: '1rem', 
-              color: '#dc2626'
-            }}>Weekly Traffic Trend</h3>
-            <TrafficChart data={filteredTrafficData} />
-          </div>
-        )}
+        <div style={{ 
+          backgroundColor: 'white', 
+          padding: '1.5rem', 
+          borderRadius: '0.5rem', 
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+        }}>
+          <h3 style={{ 
+            fontSize: '1.125rem', 
+            fontWeight: '600', 
+            marginBottom: '1rem', 
+            color: '#dc2626'
+          }}>Weekly Traffic Trend</h3>
+          <TrafficChart data={filteredTrafficData} />
+        </div>
         
-        {(!user?.enabledGraphs || user.enabledGraphs.weatherChart !== false) && (
-          <div style={{ 
-            backgroundColor: 'white', 
-            padding: '1.5rem', 
-            borderRadius: '0.5rem', 
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-          }}>
-            <h3 style={{ 
-              fontSize: '1.125rem', 
-              fontWeight: '600', 
-              marginBottom: '1rem', 
-              color: '#dc2626'
-            }}>Weather Impact Analysis</h3>
-            <WeatherChart data={filteredTrafficData} />
-          </div>
-        )}
+        <div style={{ 
+          backgroundColor: 'white', 
+          padding: '1.5rem', 
+          borderRadius: '0.5rem', 
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+        }}>
+          <h3 style={{ 
+            fontSize: '1.125rem', 
+            fontWeight: '600', 
+            marginBottom: '1rem', 
+            color: '#dc2626'
+          }}>Weather Impact Analysis</h3>
+          <WeatherChart data={filteredTrafficData} />
+        </div>
 
-        {(!user?.enabledGraphs || user.enabledGraphs.eventChart !== false) && (
-          <div style={{ 
-            backgroundColor: 'white', 
-            padding: '1.5rem', 
-            borderRadius: '0.5rem', 
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-          }}>
-            <h3 style={{ 
-              fontSize: '1.125rem', 
-              fontWeight: '600', 
-              marginBottom: '1rem', 
-              color: '#dc2626'
-            }}>Event Attendees Over Time</h3>
-            <EventChart data={filteredEventData} />
-          </div>
-        )}
+        <div style={{ 
+          backgroundColor: 'white', 
+          padding: '1.5rem', 
+          borderRadius: '0.5rem', 
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+        }}>
+          <h3 style={{ 
+            fontSize: '1.125rem', 
+            fontWeight: '600', 
+            marginBottom: '1rem', 
+            color: '#dc2626'
+          }}>Event Attendees Over Time</h3>
+          <EventChart data={filteredEventData} />
+        </div>
       </div>
     </div>
   );
