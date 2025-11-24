@@ -1,11 +1,11 @@
 // frontend/src/pages/AdminDashboard.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import adminService from '../services/adminService';
 import { Trash2, Edit2, Save, X, ToggleLeft, ToggleRight } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const { user, token } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,13 +13,11 @@ const AdminDashboard = () => {
   const [companyValue, setCompanyValue] = useState('');
   const [editingGraphs, setEditingGraphs] = useState(null);
 
-  useEffect(() => {
-    if (user && (user.role === 'admin' || user.role === 'super_admin')) {
-      fetchUsers();
+  const fetchUsers = useCallback(async () => {
+    if (!token) {
+      setLoading(false);
+      return;
     }
-  }, [user, token]);
-
-  const fetchUsers = async () => {
     try {
       setLoading(true);
       const data = await adminService.getAllUsers(token);
@@ -38,7 +36,22 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    if (authLoading) {
+      return; // Wait for auth to finish loading
+    }
+    if (user && (user.role === 'admin' || user.role === 'super_admin') && token) {
+      fetchUsers();
+    } else if (user && (user.role === 'admin' || user.role === 'super_admin')) {
+      // If user is admin but no token yet, set loading to false
+      setLoading(false);
+    } else {
+      // User is not admin or not authenticated
+      setLoading(false);
+    }
+  }, [user, token, authLoading, fetchUsers]);
 
   const handleDeleteUser = async (userId, userName) => {
     if (!window.confirm(`Are you sure you want to delete ${userName}? This action cannot be undone.`)) {
@@ -100,6 +113,16 @@ const AdminDashboard = () => {
       console.error('Error updating graphs:', err);
     }
   };
+
+  // Wait for auth to finish loading before checking access
+  if (authLoading) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <div style={{ display: 'inline-block', width: '3rem', height: '3rem', border: '3px solid #e5e7eb', borderTop: '3px solid #3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+        <p style={{ marginTop: '1rem' }}>Loading...</p>
+      </div>
+    );
+  }
 
   if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {
     return (
